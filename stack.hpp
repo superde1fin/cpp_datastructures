@@ -1,106 +1,93 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <sstream>
+#include "datastructures.h"
+#include "SQNode.hpp"
 
 using namespace std;
 
 class EmptyStackException: public runtime_error{
     public: EmptyStackException(): runtime_error("Empty Stack"){}
     }empty_exc;
-
-class Node{
-    public:
-        Node *next;
-    private:
-    int value;
     
-    Node(int input_value){
-        value = input_value;
-        next = nullptr;
+
+Stack::Stack(){
+        SQNode* Stack::head = nullptr;
+        Stack::size = 0;
         }
-                
-    Node(int input_value, Node *input_next){
-        value = input_value;
-        next = input_next;
+Stack::~Stack(){
+        while(!Stack::isEmpty()){
+            //cout << "Running destructor" << endl;
+            pop();
+            }
         }
         
-    ~Node(){
-        next = nullptr;
-        }
-    friend class Stack;
-    friend ostream& operator << (ostream& os, Node& nd);
-    };
-
-class Stack{
-    protected:
-        Node *head;
-        int size;
+bool Stack::isEmpty(){return Stack::size == 0;}
         
-    public:
-        Stack(){
-            Node *head = nullptr;
-            size = 0;
-            }
-    ~Stack(){
-            while(!isEmpty()){
-                //cout << "Running destructor" << endl;
-                pop();
-                }
-            }
-            
-        bool isEmpty(){
-            return size == 0;
-            }
-            
-        int length(){
-            return size;
-            }
-            
-        int push(int value){
-            head = new Node(value,head);
-            size ++;
-            return 0;
-            }
-            
-        int pop(){
-            if (isEmpty()){
-                throw empty_exc;
-                }
-            else{
-                Node* removed = head;
-                int value = removed -> value;
-                head = head -> next;
-                delete removed;
-                size --;
-                return value;
-            }
-        }
-    
-    int peek();
+int Stack::length(){return Stack::size;}
         
-    friend ostream& operator << (ostream& os, Stack& stk);
-    };
+int Stack::push(int value){
+    Stack::head = new SQNode(value,Stack::head);
+    Stack::size ++;
+    return 0;
+    }
+        
+int Stack::pop(){
+    if (Stack::isEmpty()){
+        throw empty_exc;
+        }
+    else{
+        SQNode* removed = Stack::head;
+        int value = removed -> value;
+        Stack::head = Stack::head -> next;
+        delete removed;
+        Stack::size --;
+        return value;
+    }
+}
 
-int Stack :: peek(){
-            if(isEmpty()){
-                throw empty_exc;
-                }
-            return head -> value;
+int Stack::peek(){
+    if(Stack::isEmpty()){
+            throw empty_exc;
             }
-
-ostream& operator << (ostream& os, Node& nd){
-    os << nd.value;
-    return os;
+        return Stack::head -> value;
     }
     
-ostream& operator << (ostream& os, Stack& stk){
-    os << "Top -> ";
-    Node* node = stk.head;
+    
+inline string toString(SQNode& node){
+    stringstream ss;
+    ss << node.value;
+    return ss.str();
+    }
+    
+inline string toString(Stack& stk) {
+        //string result = "Top -> ";
+        //Node* node = stk.head;
+        //while(node){
+            //result = result + "[" + toString((*node)) + "]";
+            //node = node -> next;
+        //}
+        //result += " <- Bottom";
+        //return result;
+        return "Printed stack here";
+    }
+
+ostream& operator << (ostream& os,const SQNode& nd){
+    ostringstream oss;
+    oss << nd.value;
+    return os << oss.str();
+    }
+    
+ostream& operator << (ostream& os,const Stack& stk){
+    ostringstream oss;
+    oss << "Top -> ";
+    SQNode* node = stk.head;
     while(node){
-        os << "[" << *node << "]";
+        oss << "[" << *node << "]";
         node = node -> next;
     }
-    os << " <- Bottom";
-    return os;
+    oss << " <- Bottom";
+    return os << oss.str();
     }
 
