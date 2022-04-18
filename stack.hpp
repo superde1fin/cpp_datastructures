@@ -2,96 +2,60 @@
 #include <stdexcept>
 #include <string>
 #include <sstream>
+#include "datastructures.h"
+#include "SQNode.hpp"
 
 using namespace std;
 
 class EmptyStackException: public runtime_error{
     public: EmptyStackException(): runtime_error("Empty Stack"){}
     }empty_exc;
-
-class Node{
-    public:
-        Node *next;
-    private:
-    int value;
     
-    Node(int input_value){
-        value = input_value;
-        next = nullptr;
-        }
-                
-    Node(int input_value, Node *input_next){
-        value = input_value;
-        next = input_next;
-        }
-        
-    ~Node(){
-        next = nullptr;
-        }
-        
-    friend class Stack;
-    friend ostream& operator << (ostream& os, const Node& nd);
-    friend string toString(Node& stk);
-    };
 
-class Stack{
-    protected:
-        Node *head;
-        int size;
-        
-    public:
-        Stack(){
-            Node *head = nullptr;
-            size = 0;
-            }
-    ~Stack(){
-            while(!isEmpty()){
-                //cout << "Running destructor" << endl;
-                pop();
-                }
-            }
-            
-        bool isEmpty(){
-            return size == 0;
-            }
-            
-        int length(){
-            return size;
-            }
-            
-        int push(int value){
-            head = new Node(value,head);
-            size ++;
-            return 0;
-            }
-            
-        int pop(){
-            if (isEmpty()){
-                throw empty_exc;
-                }
-            else{
-                Node* removed = head;
-                int value = removed -> value;
-                head = head -> next;
-                delete removed;
-                size --;
-                return value;
+Stack::Stack(){
+        SQNode* Stack::head = nullptr;
+        Stack::size = 0;
+        }
+Stack::~Stack(){
+        while(!Stack::isEmpty()){
+            //cout << "Running destructor" << endl;
+            pop();
             }
         }
-    
-    int peek(){
-        if(isEmpty()){
-                throw empty_exc;
-                }
-            return head -> value;
-        }
         
-    friend ostream& operator << (ostream& os, const Stack& stk);
-    friend string toString(Stack& stk);
+bool Stack::isEmpty(){return Stack::size == 0;}
+        
+int Stack::length(){return Stack::size;}
+        
+int Stack::push(int value){
+    Stack::head = new SQNode(value,Stack::head);
+    Stack::size ++;
+    return 0;
+    }
+        
+int Stack::pop(){
+    if (Stack::isEmpty()){
+        throw empty_exc;
+        }
+    else{
+        SQNode* removed = Stack::head;
+        int value = removed -> value;
+        Stack::head = Stack::head -> next;
+        delete removed;
+        Stack::size --;
+        return value;
+    }
+}
 
-    };
+int Stack::peek(){
+    if(Stack::isEmpty()){
+            throw empty_exc;
+            }
+        return Stack::head -> value;
+    }
     
-inline string toString(Node& node){
+    
+inline string toString(SQNode& node){
     stringstream ss;
     ss << node.value;
     return ss.str();
@@ -109,15 +73,7 @@ inline string toString(Stack& stk) {
         return "Printed stack here";
     }
 
-inline string test(int a){
-    return "test";
-    }
-    
-inline string test(bool a){
-    return "test";
-    }
-
-ostream& operator << (ostream& os,const Node& nd){
+ostream& operator << (ostream& os,const SQNode& nd){
     ostringstream oss;
     oss << nd.value;
     return os << oss.str();
@@ -126,7 +82,7 @@ ostream& operator << (ostream& os,const Node& nd){
 ostream& operator << (ostream& os,const Stack& stk){
     ostringstream oss;
     oss << "Top -> ";
-    Node* node = stk.head;
+    SQNode* node = stk.head;
     while(node){
         oss << "[" << *node << "]";
         node = node -> next;
