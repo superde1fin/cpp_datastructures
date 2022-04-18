@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <sstream>
 
 using namespace std;
 
@@ -27,8 +28,10 @@ class Node{
     ~Node(){
         next = nullptr;
         }
+        
     friend class Stack;
-    friend ostream& operator << (ostream& os, Node& nd);
+    friend ostream& operator << (ostream& os, const Node& nd);
+    friend string toString(Node& stk);
     };
 
 class Stack{
@@ -76,31 +79,59 @@ class Stack{
             }
         }
     
-    int peek();
-        
-    friend ostream& operator << (ostream& os, Stack& stk);
-    };
-
-int Stack :: peek(){
-            if(isEmpty()){
+    int peek(){
+        if(isEmpty()){
                 throw empty_exc;
                 }
             return head -> value;
-            }
+        }
+        
+    friend ostream& operator << (ostream& os, const Stack& stk);
+    friend string toString(Stack& stk);
 
-ostream& operator << (ostream& os, Node& nd){
-    os << nd.value;
-    return os;
+    };
+    
+inline string toString(Node& node){
+    stringstream ss;
+    ss << node.value;
+    return ss.str();
     }
     
-ostream& operator << (ostream& os, Stack& stk){
-    os << "Top -> ";
+inline string toString(Stack& stk) {
+        //string result = "Top -> ";
+        //Node* node = stk.head;
+        //while(node){
+            //result = result + "[" + toString((*node)) + "]";
+            //node = node -> next;
+        //}
+        //result += " <- Bottom";
+        //return result;
+        return "Printed stack here";
+    }
+
+inline string test(int a){
+    return "test";
+    }
+    
+inline string test(bool a){
+    return "test";
+    }
+
+ostream& operator << (ostream& os,const Node& nd){
+    ostringstream oss;
+    oss << nd.value;
+    return os << oss.str();
+    }
+    
+ostream& operator << (ostream& os,const Stack& stk){
+    ostringstream oss;
+    oss << "Top -> ";
     Node* node = stk.head;
     while(node){
-        os << "[" << *node << "]";
+        oss << "[" << *node << "]";
         node = node -> next;
     }
-    os << " <- Bottom";
-    return os;
+    oss << " <- Bottom";
+    return os << oss.str();
     }
 
