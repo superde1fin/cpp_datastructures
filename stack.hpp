@@ -27,19 +27,19 @@ bool Stack::isEmpty(){return Stack::size == 0;}
         
 int Stack::length(){return Stack::size;}
         
-int Stack::push(int value){
+SQNode* Stack::push(int value){
     Stack::head = new SQNode(value,Stack::head);
     Stack::size ++;
-    return 0;
+    return Stack::head;
     }
         
-int Stack::pop(){
+node_value_type Stack::pop(){
     if (Stack::isEmpty()){
         throw empty_exc;
         }
     else{
         SQNode* removed = Stack::head;
-        int value = removed -> value;
+        node_value_type value = removed -> value;
         Stack::head = Stack::head -> next;
         delete removed;
         Stack::size --;
