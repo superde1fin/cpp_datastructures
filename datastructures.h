@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 
+using namespace std;
+
 template <class node_value_type>
 class SQNode{
     public:
