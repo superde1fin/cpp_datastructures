@@ -1,11 +1,11 @@
 template <class node_value_type>
-class QNode{
+class SQNode{
     public:
-        Node* next;
+        SQNode* next;
     private:
-        Node(node_value_type, Node*);
-        Node(node_value_type);
-        ~Node();
+        SQNode(node_value_type, Node*);
+        SQNode(node_value_type);
+        ~SQNode();
     friend class Stack;
     friend class Queue;
     friend ostream& operator << (ostream& os, Node& nd);
@@ -14,23 +14,23 @@ class QNode{
     
 class Queue{
     protected:
-        Node* front;
-        Node* rear;
+        SQNode* front;
+        SQNode* rear;
         int size;
     public:
         bool isEmpty();
         int length();
         Queue();
         ~Queue();
-        Node* deQ();
-        Node* enQ(node_value_type);
+        SQNode* deQ();
+        SQNode* enQ(node_value_type);
     friend ostream& operator << (ostream& os, Queue& q);
     friend string toString(Queue& q);
     };
 
 class Stack{
     protected:
-        Node *head;
+        SQNode *head;
         int size;
         
     public:
