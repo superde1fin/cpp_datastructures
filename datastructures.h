@@ -4,7 +4,7 @@ class SQNode{
         SQNode* next;
     private:
         node_value_type value;
-        SQNode(node_value_type, Node*);
+        SQNode(node_value_type, SQNode*);
         SQNode(node_value_type);
         ~SQNode();
     friend class Stack;
