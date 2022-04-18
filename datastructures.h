@@ -1,3 +1,6 @@
+#include <iostream>
+#include <string>
+
 template <class node_value_type>
 class SQNode{
     public:
