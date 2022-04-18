@@ -3,6 +3,7 @@ class SQNode{
     public:
         SQNode* next;
     private:
+        node_value_type value;
         SQNode(node_value_type, Node*);
         SQNode(node_value_type);
         ~SQNode();
