@@ -3,7 +3,7 @@
 #include <string>
 #include <sstream>
 #include "datastructures.h"
-#include "SQNode.hpp"
+//#include "SQNode.hpp"
 
 using namespace std;
 
@@ -13,7 +13,7 @@ class EmptyStackException: public runtime_error{
     
 
 Stack::Stack(){
-        SQNode* Stack::head = nullptr;
+        SQNode* head = nullptr;
         Stack::size = 0;
         }
 Stack::~Stack(){
@@ -27,19 +27,19 @@ bool Stack::isEmpty(){return Stack::size == 0;}
         
 int Stack::length(){return Stack::size;}
         
-SQNode* Stack::push(int value){
+SQNode Stack::push(int value){
     Stack::head = new SQNode(value,Stack::head);
     Stack::size ++;
-    return Stack::head;
+    return *Stack::head;
     }
         
-node_value_type Stack::pop(){
+int Stack::pop(){
     if (Stack::isEmpty()){
         throw empty_exc;
         }
     else{
         SQNode* removed = Stack::head;
-        node_value_type value = removed -> value;
+        int value = removed -> value;
         Stack::head = Stack::head -> next;
         delete removed;
         Stack::size --;
@@ -55,13 +55,13 @@ int Stack::peek(){
     }
     
     
-inline string toString(SQNode& node){
+inline string toString(const SQNode& node){
     stringstream ss;
     ss << node.value;
     return ss.str();
     }
     
-inline string toString(Stack& stk) {
+inline string toString(const Stack& stk) {
         //string result = "Top -> ";
         //Node* node = stk.head;
         //while(node){
