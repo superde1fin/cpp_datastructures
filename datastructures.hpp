@@ -32,10 +32,7 @@ Stack::Stack(){
         Stack::size = 0;
         }
 Stack::~Stack(){
-        while(!Stack::isEmpty()){
-            //cout << "Running destructor" << endl;
-            pop();
-            }
+        while(!Stack::isEmpty()){pop();}
         }
         
 bool Stack::isEmpty(){return Stack::size == 0;}
@@ -93,7 +90,7 @@ int Queue::deQ(){
         SQNode* removed = Queue::front;
         int return_value = removed -> value;
         Queue::front = front -> next;
-        if(Queue::rear == removed){Queue::rear = nullptr;}
+        if(removed == Queue::rear){Queue::rear = nullptr;}
         delete removed;
         Queue::size--;
         return return_value;
@@ -102,7 +99,7 @@ int Queue::deQ(){
     
 SQNode Queue::enQ(int input_value){
     SQNode* new_node = new SQNode(input_value);
-    if(Queue::rear == nullptr){
+    if(Queue::isEmpty()){
         Queue::rear = new_node;
         Queue::front = new_node;
         }else{
