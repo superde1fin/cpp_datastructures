@@ -39,8 +39,8 @@ protected:
 
 class Stack{
     protected:
-    //public:
-        SQNode *head;
+    public:
+        SQNode* head;
         int size;
         
     public:
