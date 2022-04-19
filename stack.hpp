@@ -21,6 +21,7 @@ Stack::~Stack(){
             //cout << "Running destructor" << endl;
             pop();
             }
+        Stack::size = NULL;
         }
         
 bool Stack::isEmpty(){return Stack::size == 0;}

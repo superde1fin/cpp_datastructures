@@ -13,8 +13,9 @@ Queue::Queue(){
     }
 
 Queue::~Queue(){
-    Queue::front = nullptr;
-    Queue::rear = nullptr;
+    while(!Queue::isEmpty()){
+        Queue::deQ();
+        }
     Queue::size = NULL;
     }
     
@@ -26,16 +27,18 @@ int Queue::deQ(){
     if (Queue::isEmpty()){throw empty_exc;}
     else{
         SQNode* removed = Queue::front;
-        int return_value = *removed;
+        int return_value = removed -> value;
         Queue::front = front -> next;
         if(Queue::rear == removed){Queue::rear = nullptr;}
         delete removed;
         return return_value;
         }
+    Queue::size--;
     }
     
 SQNode Queue::enQ(int input_value){
     Queue::front = new SQNode(input_value, Queue::front);
     if(Queue::rear == nullptr){Queue::rear = Queue::front;}
+    Queue::size++;
     return *Queue::front;
     }

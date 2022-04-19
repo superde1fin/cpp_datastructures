@@ -64,12 +64,16 @@ class LinkedList{
         bool isEmpty();
         int length();
         int peek();
-        int peek_front();
+        int peek_tail();
         SQNode insert_head(int);
+        int remove_head();
+        int remove_tail();
         SQNode insert_tail(int);
+        //Search by value
         SQNode search(int);
-        SQNode remove(int);
-        SQNode remove(SQNode&);
+        //Remove by value
+        int remove(int);
+        int remove(SQNode&);
         SQNode insert_after(SQNode&, int);
         //insert after a value
         SQNode insert_after(int, int);
@@ -79,9 +83,9 @@ class LinkedList{
         SQNode insert_at(int, int);
         LinkedList inverted();
         //Remove after value
-        SQNode remove_after(int);
+        int remove_after(int);
         //Remove last by value
-        SQNode remove_last(int);
+        int remove_last(int);
         LinkedList flatten();
     };
     
