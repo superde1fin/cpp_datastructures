@@ -70,43 +70,6 @@ int Stack::peek(){
     }
     
     
-inline string toString(const SQNode& node){
-    stringstream ss;
-    ss << node.value;
-    return ss.str();
-    }
-    
-inline string toString(const Stack& stk) {
-        string result = "Top -> ";
-        SQNode* node = stk.head;
-        while(node){
-            result = result + "[" + toString((*node)) + "]";
-            node = node -> next;
-        }
-        result += " <- Bottom";
-        return result;
-        //return "Printed stack here";
-    }
-
-ostream& operator << (ostream& os,const SQNode& nd){
-    ostringstream oss;
-    oss << nd.value;
-    return os << oss.str();
-    }
-    
-ostream& operator << (ostream& os,const Stack& stk){
-    ostringstream oss;
-    oss << "Top -> ";
-    SQNode* node = stk.head;
-    while(node){
-        oss << "[" << *node << "]";
-        node = node -> next;
-    }
-    oss << " <- Bottom";
-    return os << oss.str();
-    }
-
-    
 
 Queue::Queue(){
     Queue::front = nullptr;
@@ -132,13 +95,53 @@ int Queue::deQ(){
         Queue::front = front -> next;
         if(Queue::rear == removed){Queue::rear = nullptr;}
         delete removed;
+        Queue::size--;
         return return_value;
         }
     }
     
 SQNode Queue::enQ(int input_value){
-    Queue::front = new SQNode(input_value, Queue::front);
-    if(Queue::rear == nullptr){Queue::rear = Queue::front;}
-    return *Queue::front;
+    SQNode* new_node = new SQNode(input_value);
+    if(Queue::rear == nullptr){
+        Queue::rear = new_node;
+        Queue::front = new_node;
+        }else{
+            Queue::rear -> next = new_node;
+            Queue::rear = new_node;
+            }
+    Queue::size++;
+    return *Queue::rear;
+    }
+    
+int Queue::peek_front(){if(!Queue::isEmpty()){return Queue::front -> value;}else throw empty_queue_exc;}
+int Queue::peek_rear(){if(!Queue::isEmpty()){return Queue::rear -> value;}else throw empty_queue_exc;}
+
+
+inline string toString(const SQNode& node){
+    stringstream ss;
+    ss << node.value;
+    return ss.str();
+    }
+    
+inline string toString(const Stack& stk) {
+        string result = "Top -> ";
+        SQNode* node = stk.head;
+        while(node){
+            result = result + "[" + toString((*node)) + "]";
+            node = node -> next;
+        }
+        result += " <- Bottom";
+        return result;
+    }
+    
+inline string toString(const Queue& que) {
+        string result = "Front -> ";
+        SQNode* node = que.front;
+        while(node){
+            result = result + "[" + toString((*node)) + "]";
+            node = node -> next;
+        }
+        result += " <- Rear";
+        return result;
     }
 

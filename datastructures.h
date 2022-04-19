@@ -22,7 +22,6 @@ class SQNode{
     
 class Queue{
 protected:
-//public:
         SQNode* front;
         SQNode* rear;
         int size;
@@ -33,8 +32,10 @@ protected:
         ~Queue();
         int deQ();
         SQNode enQ(int);
-    friend ostream& operator << (ostream& os, const Queue& q);
-    friend string toString(const Queue& q);
+        int peek_front();
+        int peek_rear();
+        
+    friend string toString(const Queue& que);
     };
 
 class Stack{
@@ -52,7 +53,6 @@ class Stack{
         int pop();
         int peek();
         
-    friend ostream& operator << (ostream& os, const Stack& stk);
     friend string toString(const Stack& stk);
     };
     
