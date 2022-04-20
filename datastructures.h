@@ -75,17 +75,17 @@ class LinkedList{
         int remove(int);
         int remove(SQNode&);
         SQNode insert_after(SQNode&, int);
-        //insert after a value
+        //insert after value
         SQNode insert_after(int, int);
-        //insert before a balue
+        //insert before a value
         SQNode insert_before(int, int);
+        SQNode insert_before(SQNode&, int);
         //insert at an index
         SQNode insert_at(int, int);
-        LinkedList inverted();
-        //Remove after value
-        int remove_after(int);
+        void invert();
+        int remove_after(SQNode&);
         //Remove last by value
         int remove_last(int);
-        LinkedList flatten();
+        void flatten();
     };
     

@@ -1,11 +1,11 @@
 #include "datastructures.h"
-#include "SQNode.hpp"
+#include "datastructures.hpp"
 
 using namespace std;
 
-class EmptyStackException: public runtime_error{
-    public: EmptyStackException(): runtime_error("Empty Linked List"){}
-    }empty_exc;
+class EmptyLinkedListException: public runtime_error{
+    public: EmptyLinkedListException(): runtime_error("Empty Linked List"){}
+    }empty_linkedlist_exc;
 
 LinkedList::LinkedList(){
     LinkedList::head = nullptr;
@@ -34,7 +34,13 @@ SQNode LinkedList::insert_head(int value){
     
 SQNode LinkedList::insert_tail(int value){
     SQNode* new_node = new SQNode(value);
-    if(LinkedList::front == nullptr){LinkedList::front = new_node;}
+    if(LinkedList::isEmpty()){
+        LinkedList::head = new_node;
+        LinkedList::tail = new_node;
+        }else{
+            LinkedList::tail -> next = new_node;
+            LinkedList::tail = new_node;
+            }
     LinkedList::size++;
     return *new_node;
     }
@@ -78,9 +84,9 @@ int LinkedList::peek(){return LinkedList::head -> value;}
 
 int LinkedList::peek_tail(return LinkedList::tail -> value;)
 
+//searches for the first occurande
 SQNode LinkedList::search(int value){
-    SQNode* node = LinkedList::head;
-    while(node != nullptr || node -> value != value){node = node -> next;}
+    for(SQNode* node = LinkedList::head; node != nullptr || node -> value != value; node = node -> next);
     if(node == nullptr){return NULL;}else{return *node;}
     }
     
@@ -105,9 +111,110 @@ int LinkedList::remove(SQNode* to_remove){
     SQNode return_node = *to_del;
     node -> next = node -> next -> next;
     delete to_del;
-    return return_node;
+    return return_node -> value;
     }
     
+//Insert after a node
+//O(n)
+SQNode LinkedList::insert_after(SQNode& prev_node, int new_value){
+    if(!LinkedList::contains(prev_node)){return NULL;}
+    else{
+        prev_node -> next = new SQNode(new_value, prev_node -> next);
+        LinkedList::size++;
+        return *(prev_node -> next);
+        }
+    }
+    
+SQNode LinkedList::insert_after(int prev_value, int new_value){
+    for(SQNode* node = LinkedList::head; node != nullptr || node -> value != value; node = node -> next);
+    if(node == nullptr){return NULL;}
+    else{
+        node -> next = new SQNode(new_value, node -> next);
+        LinkedList::size++;
+        return *(node -> next);
+        }
+    }
+
+//Insert before node
+SQNode LinkedList::insert_before(SQNode& next_node, int new_value){
+    for(SQNode* node = LinkedList::head; node -> next != next_node || node -> next != nullptr; node = node -> next);
+    if(node -> next == nullptr){return NULL;}
+    else{
+        node -> next = new SQNode(new_value, node -> next);
+        LinkedList::size++;
+        return *(node -> next);
+        }
+    }
+    
+//Insert before the first occurance of a value
+SQNode LinkedList::insert_before(int next_value, int new_value){
+    for(SQNode* node = LinkedList::head; node -> next -> value != next_value || node -> next != nullptr; node = node -> next);
+    if(node -> next == nullptr){return NULL;}
+    else{
+        node -> next = new SQNode(new_value, node -> next);
+        LinkedList::size++;
+        return *(node -> next);
+        }
+    }
+
+//Insert at index
+SQNode LinkedList::insert_at(int index, int new_value){
+    if(index > size -1){return NULL;}
+    if(index == 0){LinkedList::insert_head(new_value)}
+    SQNode* node = LinkedList::head;
+    for(int i = 0; i < index; i++){node = node -> next;}
+    node -> next = new SQNode(new_value, node -> next);
+    LinkedList::size++;
+    return *(node -> next);
+    }
+    }
+    
+void LinkedList::invert(){
+        if(LinkedList::size > 1){
+        SQNode* previous = LinkedList::head;
+        current = previous -> next;
+        following = current -> next;
+        LinkedList::head -> next -> next = LinkedList::head;
+        LinkedList::head -> next = nullptr;
+        while(following != nullptr){
+            current -> next = previous;
+            previous = current;
+            current = following;
+            following = following -> next;
+            }
+        SQNode* temp = LinkedList::tail;
+        LinkedList::tail = LinkedList::head;
+        LinkedList::head = temp;
+        }
+    }
 
 
+int LinkedList::remove_after(SQNode& node){
+        if(!LinkedList::contains(node)){return NULL;}
+    else{
+        if(LinkedList::size >= 2){
+            node -> next = node -> next -> next
+            LinkedList::size++;
+            return *(prev_node -> next);
+            }
+        else{return NULL;}
+        }
+    }
 
+int LinkedList::remove_last(int value){
+    SQNode* prev_rem = nullptr;
+    for(SQNode* prev = LinkedList::head; prev -> next != nullptr; prev =  prev -> next){
+        if(prev -> next -> value == value){prev_rem = prev;}
+        }
+    if(prev_rem == nullptr){
+        if(LinkedList::head -> value == value){
+            return LinkedList::remove_head();
+            }else{return NULL;}
+        }else{
+            SQNode* to_del = prev_rem -> next;
+            if(to_del == LinkedList::tail){return LinkedList::remove_tail();}
+            int return_value = to_del -> value;
+            prev_rem -> next = prev_rem -> next -> next;
+            return return_value;
+            }
+    }
