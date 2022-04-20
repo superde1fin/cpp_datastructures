@@ -1,8 +1,9 @@
 #include <boost/python.hpp>
 #include "datastructures.hpp"
-//#include "stack.hpp"
+
 using namespace boost::python;
 
+//function overloads
 string stack_toString(const Stack& stk){return toString(stk);}
 string queue_toString(const Queue& que){return toString(que);}
 
@@ -24,5 +25,28 @@ BOOST_PYTHON_MODULE(cstruct){
     .def("peek_front", &Queue::peek_front)
     .def("peek_rear", &Queue::peek_rear)
     .def("__str__", &queue_toString)
+    ;
+    
+    class_<LinkedList>("LinkedList")
+    .def(init<>())
+    //.def(init<int*>())
+    .def("isEmpty", &LinkedList::isEmpty)
+    .def("length", &LinkedList::length)
+    .def("insert_head", &LinkedList::insert_head)
+    .def("insert_tail", &LinkedList::insert_tail)
+    .def("peek", &LinkedList::peek)
+    .def("peek_tail", &LinkedList::peek_tail)
+    .def("contains", &LinkedList::contains)
+    .def("search", &LinkedList::search)
+    .def("remove", static_cast<int(LinkedList::*)(int)>(&LinkedList::remove))
+    .def("remove", static_cast<int(LinkedList::*)(SQNode&)>(&LinkedList::remove))
+    .def("insert_before", static_cast<SQNode(LinkedList::*)(int, int)>(&LinkedList::insert_before))
+    .def("insert_before", static_cast<SQNode(LinkedList::*)(SQNode&, int)>(&LinkedList::insert_before))
+    .def("insert_after", static_cast<SQNode(LinkedList::*)(int, int)>(&LinkedList::insert_after))
+    .def("insert_after", static_cast<SQNode(LinkedList::*)(SQNode&, int)>(&LinkedList::insert_after))
+    .def("insert_at", &LinkedList::insert_at)
+    .def("invert", &LinkedList::invert)
+    .def("remove_after", &LinkedList::remove_after)
+    .def("remove_last", &LinkedList::remove_last)
     ;
     }
