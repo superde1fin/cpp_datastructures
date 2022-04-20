@@ -14,6 +14,7 @@ class SQNode{
 
     friend class Stack;
     friend class Queue;
+    friend class LinkedList;
     friend ostream& operator << (ostream& os, const SQNode& nd);
     friend string toString(const SQNode& nd);
     friend void initialize_node_constructors();
@@ -58,11 +59,13 @@ class LinkedList{
     protected:
         SQNode* head;
         SQNode* tail;
+        int size;
     public:
         LinkedList();
         LinkedList(int*);
         ~LinkedList();
         bool isEmpty();
+        bool contains(SQNode&);
         int length();
         int peek();
         int peek_tail();
