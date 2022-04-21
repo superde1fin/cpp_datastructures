@@ -135,4 +135,8 @@ class BinarySearchTree{
         void delete_subtree(BTNode*);
         string inorder();
         void inorder_parser(BTNode*, stringstream&);
+        string preorder();
+        void preorder_parser(BTNode*, stringstream&);
+        string postorder();
+        void postorder_parser(BTNode*, stringstream&);
     };

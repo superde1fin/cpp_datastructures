@@ -22,7 +22,10 @@ int main(){
     bst.insert(5);
     bst.erase(2);
     BTNode root = bst.get_root();
-    cout << bst.inorder();
+    cout << bst.inorder() << endl;
+    cout << bst.preorder() << endl;
+    cout << bst.postorder() << endl;
+    
     
     return 0;
     }

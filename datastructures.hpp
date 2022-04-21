@@ -563,17 +563,6 @@ void BinarySearchTree::inorder_parser(BTNode* root, stringstream& ss){
         ss << '[' << root -> value << ']';
         BinarySearchTree::inorder_parser(root -> right, ss);
     }
-    //if(root.left == nullptr && root.right != nullptr){
-        //ss << root.value;
-        //BinarySearchTree::inorder(*root.right);
-    //}
-    //if(root.left != nullptr && root.right == nullptr){
-        //BinarySearchTree::inorder(*root.left);
-        //ss << root.value;
-    //}
-    //if(root.left == nullptr && root.right == nullptr){
-        //ss << root.value;
-    //}
     }
 
 string BinarySearchTree::inorder(){
@@ -582,5 +571,31 @@ string BinarySearchTree::inorder(){
     return ss.str();
     }
 
+void BinarySearchTree::preorder_parser(BTNode* root, stringstream& ss){
+    if(root != nullptr){
+        ss << '[' << root -> value << ']';
+        BinarySearchTree::preorder_parser(root -> left, ss);
+        BinarySearchTree::preorder_parser(root -> right, ss);
+    }
+    }
 
+string BinarySearchTree::preorder(){
+    stringstream ss;
+    preorder_parser(BinarySearchTree::root, ss);
+    return ss.str();
+    }
+    
+void BinarySearchTree::postorder_parser(BTNode* root, stringstream& ss){
+    if(root != nullptr){
+        BinarySearchTree::postorder_parser(root -> left, ss);
+        BinarySearchTree::postorder_parser(root -> right, ss);
+        ss << '[' << root -> value << ']';
+    }
+    }
+
+string BinarySearchTree::postorder(){
+    stringstream ss;
+    postorder_parser(BinarySearchTree::root, ss);
+    return ss.str();
+    }
 
