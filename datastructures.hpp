@@ -557,15 +557,30 @@ int BinarySearchTree::erase(int erase_value){
     return 0;
     }
 
-void BinarySearchTree::inorder(BTNode* root){
+void BinarySearchTree::inorder_parser(BTNode* root, stringstream& ss){
     if(root != nullptr){
-        BinarySearchTree::inorder(root -> left);
-        cout << root -> value;
-        BinarySearchTree::inorder(root -> right);
+        BinarySearchTree::inorder_parser(root -> left, ss);
+        ss << '[' << root -> value << ']';
+        BinarySearchTree::inorder_parser(root -> right, ss);
     }
+    //if(root.left == nullptr && root.right != nullptr){
+        //ss << root.value;
+        //BinarySearchTree::inorder(*root.right);
+    //}
+    //if(root.left != nullptr && root.right == nullptr){
+        //BinarySearchTree::inorder(*root.left);
+        //ss << root.value;
+    //}
+    //if(root.left == nullptr && root.right == nullptr){
+        //ss << root.value;
+    //}
     }
 
-
+string BinarySearchTree::inorder(){
+    stringstream ss;
+    inorder_parser(BinarySearchTree::root, ss);
+    return ss.str();
+    }
 
 
 

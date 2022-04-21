@@ -58,6 +58,7 @@ BOOST_PYTHON_MODULE(cstruct){
     .def("erase", &BinarySearchTree::erase)
     .def("validate", &BinarySearchTree::validate)
     .def("get_root", &BinarySearchTree::get_root)
+    .def("inorder", &BinarySearchTree::inorder)
     ;
     
     class_<BTNode>("BTNode", init<int>())

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <sstream>
 
 using namespace std;
 
@@ -132,5 +133,6 @@ class BinarySearchTree{
         bool validate();
         bool validate_subtree(BTNode*);
         void delete_subtree(BTNode*);
-        void inorder(BTNode*);
+        string inorder();
+        void inorder_parser(BTNode*, stringstream&);
     };
