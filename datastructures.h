@@ -3,13 +3,15 @@
 
 using namespace std;
 
+//==================================================================================
+//Need to create getters and setters and make actual values private
 class SQNode{
     public:
         SQNode* next;
         SQNode(int, SQNode*);
         SQNode(int);
         ~SQNode();
-    private:
+    protected:
         int value;
 
     friend class Stack;
@@ -20,6 +22,7 @@ class SQNode{
     friend void initialize_node_constructors();
     };
     
+//==================================================================================
 class Queue{
 protected:
         SQNode* front;
@@ -38,6 +41,7 @@ protected:
     friend string toString(const Queue& que);
     };
 
+//==================================================================================
 class Stack{
     protected:
         SQNode *head;
@@ -54,7 +58,8 @@ class Stack{
         
     friend string toString(const Stack& stk);
     };
-
+    
+//==================================================================================
 class LinkedList{
     protected:
         SQNode* head;
@@ -93,3 +98,39 @@ class LinkedList{
         void flatten();
     };
     
+    
+//==================================================================================
+class BTNode{
+    private:
+        int value;
+        BTNode* left;
+        BTNode* right;
+    
+    public:
+        BTNode(int);
+        BTNode(int, BTNode*, BTNode*);
+        ~BTNode();
+        BTNode get_right();
+        BTNode get_left();
+        int get_value();
+    
+    friend class BinarySearchTree;
+    };
+
+//==================================================================================
+class BinarySearchTree{
+    private:
+        BTNode* root;
+    
+    public:
+        BinarySearchTree();
+        ~BinarySearchTree();
+        BTNode get_root();
+        bool isEmpty();
+        BTNode insert(int);
+        int erase(int);
+        bool validate();
+        bool validate_subtree(BTNode*);
+        void delete_subtree(BTNode*);
+        void inorder(BTNode*);
+    };

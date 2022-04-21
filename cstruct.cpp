@@ -3,7 +3,7 @@
 
 using namespace boost::python;
 
-//function overloads
+//Non-member function overloads
 string stack_toString(const Stack& stk){return toString(stk);}
 string queue_toString(const Queue& que){return toString(que);}
 
@@ -29,6 +29,7 @@ BOOST_PYTHON_MODULE(cstruct){
     
     class_<LinkedList>("LinkedList")
     .def(init<>())
+    //Overloaded constructor goes here
     //.def(init<int*>())
     .def("isEmpty", &LinkedList::isEmpty)
     .def("length", &LinkedList::length)
@@ -38,6 +39,7 @@ BOOST_PYTHON_MODULE(cstruct){
     .def("peek_tail", &LinkedList::peek_tail)
     .def("contains", &LinkedList::contains)
     .def("search", &LinkedList::search)
+    //Member function overloads
     .def("remove", static_cast<int(LinkedList::*)(int)>(&LinkedList::remove))
     .def("remove", static_cast<int(LinkedList::*)(SQNode&)>(&LinkedList::remove))
     .def("insert_before", static_cast<SQNode(LinkedList::*)(int, int)>(&LinkedList::insert_before))
@@ -49,4 +51,20 @@ BOOST_PYTHON_MODULE(cstruct){
     .def("remove_after", &LinkedList::remove_after)
     .def("remove_last", &LinkedList::remove_last)
     ;
+    
+    class_<BinarySearchTree>("BinarySearchTree", init<>())
+    .def("isEmpty", &BinarySearchTree::isEmpty)
+    .def("insert", &BinarySearchTree::insert)
+    .def("erase", &BinarySearchTree::erase)
+    .def("validate", &BinarySearchTree::validate)
+    .def("get_root", &BinarySearchTree::get_root)
+    ;
+    
+    class_<BTNode>("BTNode", init<int>())
+    .def("get_left", &BTNode::get_left)
+    .def("get_right", &BTNode::get_right)
+    .def("get_value", &BTNode::get_value)
+    ;
     }
+    
+

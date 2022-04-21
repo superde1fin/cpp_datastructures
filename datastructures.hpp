@@ -379,3 +379,193 @@ int LinkedList::remove_last(int value){
             return return_value;
             }
     }
+
+//BInary Tree Node
+//==================================================================================
+BTNode::BTNode(int new_value){
+    BTNode::value = new_value;
+    BTNode::left = nullptr;
+    BTNode::right = nullptr;
+    }
+    
+//Need to make it impossible to pass variables without their names
+//BTNode::BTNode(int new_value, BTNode* left, BTNode* right){
+    //BTNode::value = new_value;
+    //BTNode::left = left;
+    //BTNode::right = right;
+    //}
+    
+BTNode::~BTNode(){
+    BTNode::value = NULL;
+    BTNode::left = nullptr;
+    BTNode::right = nullptr;
+    }
+    
+BTNode BTNode::get_right(){return *BTNode::right;}
+BTNode BTNode::get_left(){return *BTNode::left;}
+int BTNode::get_value(){return BTNode::value;}
+
+//Binary Search Tree
+//==================================================================================
+BinarySearchTree::BinarySearchTree(){
+    BinarySearchTree::root = nullptr;
+    }
+    
+void BinarySearchTree::delete_subtree(BTNode* root){
+    if(root != nullptr){
+        BinarySearchTree::delete_subtree(root -> left);
+        root -> left = nullptr;
+        BinarySearchTree::delete_subtree(root -> left);
+        root -> left = nullptr;
+        root -> value = NULL;
+        }
+    }
+    
+BTNode BinarySearchTree::get_root(){return *BinarySearchTree::root;}
+    
+BinarySearchTree::~BinarySearchTree(){
+    BinarySearchTree::delete_subtree(BinarySearchTree::root);
+    }
+    
+bool BinarySearchTree::validate_subtree(BTNode* root){
+    if(root != nullptr){
+        bool is_valid = true;
+        if(root -> right != nullptr && root -> left != nullptr){
+            is_valid = (root -> left -> value <= root -> value) && (root -> right -> value >= root -> value);
+            }
+        if(root -> right == nullptr && root -> left != nullptr){
+            is_valid = (root -> left -> value <= root -> value) ;
+            }
+        if(root -> right != nullptr && root -> left == nullptr){
+            is_valid = (root -> right-> value >= root -> value) ;
+            }
+            
+        return is_valid && validate_subtree(root -> left) && validate_subtree(root -> right);
+        }
+    else{return true;}
+    }
+
+bool BinarySearchTree::validate(){
+    return BinarySearchTree::validate_subtree(BinarySearchTree::root);
+}
+
+bool BinarySearchTree::isEmpty(){
+    return BinarySearchTree::root == nullptr;
+    }
+
+BTNode BinarySearchTree::insert(int new_value){
+    BTNode* new_node = new BTNode(new_value);
+    if(BinarySearchTree::isEmpty()){
+        BinarySearchTree::root = new_node;
+        return *BinarySearchTree::root;
+        }
+    BTNode* node = BinarySearchTree::root;
+    bool placed = false;
+    while(!placed){
+        if(new_value >= node -> value){
+            if(node -> right != nullptr){
+                node = node -> right;
+                }else{
+                    //If no node than place new
+                    node -> right = new_node;
+                    placed = true;
+                    }
+            }else{
+                if(node -> left != nullptr){
+                    node = node -> left;
+                    }else{
+                        node -> left = new_node;
+                        placed = true;
+                        }
+                }
+        }
+    return *new_node;
+    }
+
+
+int BinarySearchTree::erase(int erase_value){
+    if(BinarySearchTree::isEmpty()){return -1;}
+    BTNode* parent = BinarySearchTree::root;
+    BTNode* node = parent;
+    bool is_left;
+    bool deleted = false;
+    while(deleted == 0 && node != nullptr){
+        //If found node check for four conditions has left, has right, has both, or has niether 
+        if(node -> value == erase_value){
+            //Has both
+            if(node -> right != nullptr && node -> left != nullptr){
+                //Finding successor from the right (smallest value)
+                BTNode* successor;
+                for(successor = node -> right; successor -> left != nullptr; successor = successor -> left){
+                    parent = successor;
+                    }
+                //Copy successor's value to the node that has to be removed
+                node -> value = successor -> value;
+                //Set node to successor for further checks to remove it
+                node = successor;
+                is_left = true;
+                //BinarySearchTree::inorder(BinarySearchTree::root);
+                //continue;
+                }
+            //Has niether (leaf)
+            if(node -> right == nullptr && node -> left == nullptr){
+                //No need to reparent if deleting a root
+                if(node != BinarySearchTree::root){
+                    if(is_left){parent -> left = nullptr;}else{parent -> right = nullptr;}
+                    }
+                delete node;
+                deleted = true;
+                continue;
+                }
+            //Has left
+            if(node -> right == nullptr && node -> left != nullptr){
+                if(node != BinarySearchTree::root){
+                    //Connecting node -> left to a parent
+                    if(is_left){parent -> left = node -> left;}else{parent -> right = node -> left;}
+                    }
+                delete node;
+                deleted = true;
+                continue;
+                }
+            //Has right
+            if(node -> right != nullptr && node -> left == nullptr){
+                if(node != BinarySearchTree::root){
+                    //Connecting node -> right to a parent
+                    if(is_left){parent -> left = node -> right;}else{parent -> right = node -> right;}
+                    }
+                delete node;
+                deleted = true;
+                continue;
+                }
+            }
+        if(!deleted){
+            //Check if value is smaller than node and go left
+            if(erase_value < node -> value){
+                parent = node;
+                node = node -> left;
+                is_left = true;
+                }
+                
+            //Check if value is greater than node and go right
+            if(erase_value > node -> value){
+                parent = node;
+                node = node -> right;
+                is_left = false;
+                }
+            }
+        }
+    return 0;
+    }
+
+void BinarySearchTree::inorder(BTNode* root){
+    if(root != nullptr){
+        BinarySearchTree::inorder(root -> left);
+        cout << root -> value;
+        BinarySearchTree::inorder(root -> right);
+    }
+    }
+
+
+
+
+
