@@ -3,9 +3,6 @@
 
 using namespace boost::python;
 
-//Non-member function overloads
-string stack_toString(const Stack& stk){return toString(stk);}
-string queue_toString(const Queue& que){return toString(que);}
 
 BOOST_PYTHON_MODULE(cstruct){
     class_<SQNode>("SQNode", no_init);
@@ -15,7 +12,7 @@ BOOST_PYTHON_MODULE(cstruct){
     .def("push", &Stack::push)
     .def("pop", &Stack::pop)
     .def("peek", &Stack::peek)
-    .def("__str__", &stack_toString)
+    .def("__str__", &Stack::toString)
     ;
     class_<Queue>("Queue", init<>())
     .def("isEmpty", &Queue::isEmpty)
@@ -24,7 +21,7 @@ BOOST_PYTHON_MODULE(cstruct){
     .def("deQ", &Queue::deQ)
     .def("peek_front", &Queue::peek_front)
     .def("peek_rear", &Queue::peek_rear)
-    .def("__str__", &queue_toString)
+    .def("__str__", &Queue::toString)
     ;
     
     class_<LinkedList>("LinkedList")
@@ -63,7 +60,7 @@ BOOST_PYTHON_MODULE(cstruct){
     .def("postorder", &BinarySearchTree::postorder)
     ;
     
-    class_<BTNode>("BTNode", init<int>())
+    class_<BTNode>("BTNode", no_init)
     .def("get_left", &BTNode::get_left)
     .def("get_right", &BTNode::get_right)
     .def("get_value", &BTNode::get_value)

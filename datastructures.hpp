@@ -19,20 +19,38 @@ class EmptyLinkedListException: public runtime_error{
     public: EmptyLinkedListException(): runtime_error("Empty Linked List"){}
     }empty_linkedlist_exc;
     
+    
+//Node
+//==================================================================================
+Node::Node(int new_value){
+    Node::value = new_value;
+    }
+    
+Node::~Node(){
+    Node::value = NULL;
+    }
+    
+string Node::toString(){
+    stringstream ss;
+    ss << Node::value;
+    return ss.str();
+    }
+
+int Node::get_value(){return Node::value;}
+
 //SQNode
 //==================================================================================
-SQNode::SQNode(int input_value, SQNode* next){
-    SQNode::value = input_value;
+SQNode::SQNode(int input_value, SQNode* next) : Node(input_value){
     SQNode::next = next;
     }
-SQNode::SQNode(int input_value){
-    SQNode::value = input_value;
+SQNode::SQNode(int input_value) : Node(input_value){
     SQNode::next = nullptr;
     }
 SQNode::~SQNode(){
-    SQNode::value = NULL;
     SQNode::next = nullptr;
     }
+    
+SQNode SQNode::get_next(){return *SQNode::next;}
 
 //Stack
 //==================================================================================
@@ -73,6 +91,17 @@ int Stack::peek(){
             throw empty_stack_exc;
             }
         return Stack::head -> value;
+    }
+    
+string Stack::toString() {
+        string result = "Top -> ";
+        SQNode* node = Stack::head;
+        while(node){
+            result = result + "[" + node -> toString() + "]";
+            node = node -> next;
+        }
+        result += " <- Bottom";
+        return result;
     }
     
     
@@ -123,29 +152,11 @@ SQNode Queue::enQ(int input_value){
 int Queue::peek_front(){if(!Queue::isEmpty()){return Queue::front -> value;}else throw empty_queue_exc;}
 int Queue::peek_rear(){if(!Queue::isEmpty()){return Queue::rear -> value;}else throw empty_queue_exc;}
 
-
-inline string toString(const SQNode& node){
-    stringstream ss;
-    ss << node.value;
-    return ss.str();
-    }
-    
-inline string toString(const Stack& stk) {
-        string result = "Top -> ";
-        SQNode* node = stk.head;
-        while(node){
-            result = result + "[" + toString((*node)) + "]";
-            node = node -> next;
-        }
-        result += " <- Bottom";
-        return result;
-    }
-    
-inline string toString(const Queue& que) {
+string Queue::toString() {
         string result = "Front -> ";
-        SQNode* node = que.front;
+        SQNode* node = Queue::front;
         while(node){
-            result = result + "[" + toString((*node)) + "]";
+            result = result + "[" + node -> toString() + "]";
             node = node -> next;
         }
         result += " <- Rear";
@@ -382,15 +393,13 @@ int LinkedList::remove_last(int value){
 
 //BInary Tree Node
 //==================================================================================
-BTNode::BTNode(int new_value){
-    BTNode::value = new_value;
+BTNode::BTNode(int new_value) : Node(new_value){
     BTNode::left = nullptr;
     BTNode::right = nullptr;
     }
     
 //Need to make it impossible to pass variables without their names
 //BTNode::BTNode(int new_value, BTNode* left, BTNode* right){
-    //BTNode::value = new_value;
     //BTNode::left = left;
     //BTNode::right = right;
     //}
@@ -403,7 +412,6 @@ BTNode::~BTNode(){
     
 BTNode BTNode::get_right(){return *BTNode::right;}
 BTNode BTNode::get_left(){return *BTNode::left;}
-int BTNode::get_value(){return BTNode::value;}
 
 //Binary Search Tree
 //==================================================================================

@@ -14,6 +14,7 @@ int main(){
     //test(ss);
     //cout << ss.str();
     
+    /*
     BinarySearchTree bst = BinarySearchTree();
     bst.insert(2);
     bst.insert(1);
@@ -25,7 +26,14 @@ int main(){
     cout << bst.inorder() << endl;
     cout << bst.preorder() << endl;
     cout << bst.postorder() << endl;
-    
+    */
+    Stack stk = Stack();
+    for(int i = 0; i < 10; i++){
+        stk.push(i);
+        }
+        
+    cout << stk.push(7).get_value();
+    //cout << stk.toString();
     
     return 0;
     }

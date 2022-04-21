@@ -5,16 +5,26 @@
 using namespace std;
 
 //==================================================================================
-//Need to create getters and setters and make actual values private
-class SQNode{
+class Node{
+    protected:
+        int value;
+            Node(int);
+        ~Node();
     public:
+    int get_value();
+    string toString();
+    };
+//==================================================================================
+//Need to create getters and setters and make actual values private
+class SQNode : public Node{
+    private:
         SQNode* next;
         SQNode(int, SQNode*);
         SQNode(int);
+    public:
         ~SQNode();
-    protected:
-        int value;
-
+        SQNode get_next();
+        
     friend class Stack;
     friend class Queue;
     friend class LinkedList;
@@ -38,8 +48,7 @@ protected:
         SQNode enQ(int);
         int peek_front();
         int peek_rear();
-        
-    friend string toString(const Queue& que);
+        string toString();
     };
 
 //==================================================================================
@@ -56,8 +65,8 @@ class Stack{
         SQNode push(int);
         int pop();
         int peek();
+        string toString();
         
-    friend string toString(const Stack& stk);
     };
     
 //==================================================================================
@@ -101,19 +110,17 @@ class LinkedList{
     
     
 //==================================================================================
-class BTNode{
+class BTNode : public Node{
     private:
-        int value;
         BTNode* left;
         BTNode* right;
-    
-    public:
         BTNode(int);
         BTNode(int, BTNode*, BTNode*);
+    
+    public:
         ~BTNode();
         BTNode get_right();
         BTNode get_left();
-        int get_value();
     
     friend class BinarySearchTree;
     };
@@ -140,3 +147,5 @@ class BinarySearchTree{
         string postorder();
         void postorder_parser(BTNode*, stringstream&);
     };
+
+
