@@ -65,6 +65,24 @@ BOOST_PYTHON_MODULE(cstruct){
     .def("get_right", &BTNode::get_right)
     .def("get_value", &BTNode::get_value)
     ;
+    
+    class_<HNode>("HNode", no_init)
+    .def("get_left", &HNode::get_left)
+    .def("get_right", &HNode::get_right)
+    .def("get_value", &HNode::get_value)
+    .def("get_parent", &HNode::get_parent)
+    .def("get_height", &HNode::get_height)
+    ;
+    
+    
+    class_<AVL_Tree>("AVL_Tree", init<>())
+    .def("isEmpty", &AVL_Tree::isEmpty)
+    .def("insert", &AVL_Tree::insert)
+    .def("erase", &AVL_Tree::erase)
+    //.def("validate", &AVL_Tree::validate)
+    .def("get_root", &AVL_Tree::get_root)
+
+    ;
     }
     
 

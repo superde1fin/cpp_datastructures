@@ -111,7 +111,7 @@ class LinkedList{
     
 //==================================================================================
 class BTNode : public Node{
-    private:
+    protected:
         BTNode* left;
         BTNode* right;
         BTNode(int);
@@ -127,7 +127,7 @@ class BTNode : public Node{
 
 //==================================================================================
 class BinarySearchTree{
-    private:
+    protected:
         BTNode* root;
     
     public:
@@ -149,3 +149,43 @@ class BinarySearchTree{
     };
 
 
+class HNode : public Node{
+    protected:
+        HNode(int);
+        int height;
+        HNode* parent;
+        HNode* right;
+        HNode* left;
+        
+    public:
+        ~HNode();
+        int get_height();
+        HNode get_parent();
+        HNode get_right();
+        HNode get_left();
+        
+    friend class AVL_Tree;
+    };
+
+
+//==================================================================================
+class AVL_Tree{
+    protected:
+    HNode* root;
+    public:
+    AVL_Tree();
+    ~AVL_Tree();
+    HNode insert(int);
+    int erase(int);
+    bool isEmpty();
+    bool validate_subtree(HNode*);
+    void rotate_left(HNode*);
+    void rotate_right(HNode*);
+    int calc_height(HNode*);
+    bool update_heights(HNode*);
+    void inspect_insert(HNode*);
+    void inspect_delete(HNode*);
+    int get_balance_factor(HNode*);
+    HNode* rebalance(HNode*, HNode*, HNode*);
+    HNode get_root();
+    };

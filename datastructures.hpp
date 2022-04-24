@@ -38,7 +38,7 @@ string Node::toString(){
 
 int Node::get_value(){return Node::value;}
 
-//SQNode
+//Stack - Queue Node (also used for Linked Lists)
 //==================================================================================
 SQNode::SQNode(int input_value, SQNode* next) : Node(input_value){
     SQNode::next = next;
@@ -512,8 +512,6 @@ int BinarySearchTree::erase(int erase_value){
                 //Set node to successor for further checks to remove it
                 node = successor;
                 is_left = true;
-                //BinarySearchTree::inorder(BinarySearchTree::root);
-                //continue;
                 }
             //Has niether (leaf)
             if(node -> right == nullptr && node -> left == nullptr){
@@ -606,4 +604,266 @@ string BinarySearchTree::postorder(){
     postorder_parser(BinarySearchTree::root, ss);
     return ss.str();
     }
+    
+//Height Node for AVL Trees
+//==================================================================================
+HNode::HNode(int new_value) : Node(new_value){
+    HNode::right = nullptr;
+    HNode::left = nullptr;
+    HNode::height = 1;
+    HNode::parent = nullptr;
+    }   
+    
+HNode::~HNode(){
+    HNode::height = NULL;
+    HNode::parent = nullptr;
+    }
+    
+HNode HNode::get_right(){return *HNode::right;}
+HNode HNode::get_left(){return *HNode::left;}
+HNode HNode::get_parent(){return *HNode::parent;}
+int HNode::get_height(){return HNode::height;}
+    
+    
+//AVL Tree
+//==================================================================================
 
+HNode AVL_Tree::get_root(){return *AVL_Tree::root;}
+
+AVL_Tree::AVL_Tree() {
+    AVL_Tree::root = nullptr;
+    }
+    
+AVL_Tree::~AVL_Tree(){
+    AVL_Tree::root = nullptr;
+    }
+
+//Standart AVL rotation where x, y, z are child, parent, and great parent respectively
+void AVL_Tree::rotate_left(HNode* x){
+    HNode* y = x -> parent;
+    HNode* z = y -> parent;
+    y -> right = x -> left;
+    x -> left = y;
+    if(z != nullptr){
+        if(y == z -> left){z -> left = x;}
+        else{z -> right = x;}
+        }
+    }
+
+void AVL_Tree::rotate_right(HNode* x){
+    HNode* y = x -> parent;
+    HNode* z = y -> parent;
+    y -> left = x -> right;
+    x -> right = y;
+    if(z != nullptr){
+        if(y == z -> left){z -> left = x;}
+        else{z -> right = x;}
+        }
+    }
+
+int AVL_Tree::calc_height(HNode* node){
+    if(node -> right != nullptr && node -> left != nullptr){
+        return node -> right -> height > node -> left -> height ? node -> right -> height +1 : node -> left -> height + 1;
+        }
+    if(node -> right == nullptr && node -> left != nullptr){return node -> left -> height +1;}
+    if(node -> right != nullptr && node -> left == nullptr){return node -> right -> height + 1;}
+    if(node -> right == nullptr && node -> left == nullptr){return 1;}
+    }
+    
+HNode AVL_Tree::insert(int new_value){
+    HNode* new_node = new HNode(new_value);
+    if(AVL_Tree::isEmpty()){
+        AVL_Tree::root = new_node;
+        return *AVL_Tree::root;
+        }
+    
+    HNode* node = AVL_Tree::root;
+    bool placed = false;
+    while(!placed){
+        if(new_value >= node -> value){
+            if(node -> right != nullptr){
+                node = node -> right;
+                }else{
+                    //If no node than place new
+                    node -> right = new_node;
+                    new_node -> parent = node;
+                    placed = true;
+                    }
+            }else{
+                if(node -> left != nullptr){
+                    node = node -> left;
+                    }else{
+                        node -> left = new_node;
+                        new_node -> parent = node;
+                        placed = true;
+                        }
+                }
+        }
+        
+    AVL_Tree::inspect_insert(new_node);
+    return *new_node;
+    }
+
+int AVL_Tree::get_balance_factor(HNode* node){
+    return (node -> left != nullptr ? node -> left -> height : 0) - (node -> right != nullptr ? node -> right -> height : 0);
+    }
+
+void AVL_Tree::inspect_insert(HNode* node){
+    HNode* parent = node -> parent;
+    HNode* gparent = parent -> parent;
+    parent -> height++;
+    int old_gparent_height;
+    
+    bool rebalanced = false;
+    do{
+        old_gparent_height = gparent -> height;
+        if(AVL_Tree::get_balance_factor(gparent) > 1){
+            rebalanced = AVL_Tree::rebalance(gparent, parent, node);
+            continue;
+            }else{
+                AVL_Tree::calc_height(gparent);
+                }
+        gparent = gparent -> parent;
+        parent = parent -> parent;
+        node = node ->parent;
+        }while(!rebalanced && gparent != nullptr && old_gparent_height != parent -> height);
+    
+    
+
+    }
+
+HNode* AVL_Tree::rebalance(HNode* gparent, HNode* parent, HNode* node){
+    if(parent = gparent -> left){
+        if(node = parent -> left){
+            //Left left case
+            AVL_Tree::rotate_right(parent);
+            parent -> height = AVL_Tree::calc_height(parent);
+            return parent;
+            }else{
+                //Left right case
+                AVL_Tree::rotate_left(node);
+                AVL_Tree::rotate_right(node); 
+                node -> height = AVL_Tree::calc_height(node);
+                return node;
+                }
+        }else{
+            if(node = parent -> left){
+            //Right left case
+                AVL_Tree::rotate_right(node);
+                AVL_Tree::rotate_left(node); 
+                node -> height = AVL_Tree::calc_height(node);
+                return node;
+            }else{
+                //Right right case
+                AVL_Tree::rotate_left(parent); 
+                parent -> height = AVL_Tree::calc_height(parent);
+                return parent;
+                }
+            }
+    }
+
+int AVL_Tree::erase(int erase_value){
+    if(AVL_Tree::isEmpty()){return -1;}
+    HNode* updated_node;
+    HNode* parent = AVL_Tree::root;
+    HNode* node = parent;
+    bool is_left;
+    bool deleted = false;
+    while(deleted == 0 && node != nullptr){
+        //If found node check for four conditions has left, has right, has both, or has niether 
+        if(node -> value == erase_value){
+            //Has both
+            if(node -> right != nullptr && node -> left != nullptr){
+                updated_node = parent;
+                //Finding successor from the right (smallest value)
+                HNode* successor;
+                for(successor = node -> right; successor -> left != nullptr; successor = successor -> left){
+                    parent = successor;
+                    }
+                //Copy successor's value to the node that has to be removed
+                node -> value = successor -> value;
+                //Set node to successor for further checks to remove it
+                node = successor;
+                is_left = true;
+                }
+            //Has niether (leaf)
+            if(node -> right == nullptr && node -> left == nullptr){
+                updated_node = parent;
+                //No need to reparent if deleting a root
+                if(node != AVL_Tree::root){
+                    if(is_left){parent -> left = nullptr;}else{parent -> right = nullptr;}
+                    }
+                delete node;
+                deleted = true;
+                continue;
+                }
+            //Has left
+            if(node -> right == nullptr && node -> left != nullptr){
+                updated_node = parent;
+                if(node != AVL_Tree::root){
+                    //Connecting node -> left to a parent
+                    if(is_left){parent -> left = node -> left;}else{parent -> right = node -> left;}
+                    }
+                delete node;
+                deleted = true;
+                continue;
+                }
+            //Has right
+            if(node -> right != nullptr && node -> left == nullptr){
+                updated_node = parent;
+                if(node != AVL_Tree::root){
+                    //Connecting node -> right to a parent
+                    if(is_left){parent -> left = node -> right;}else{parent -> right = node -> right;}
+                    }
+                delete node;
+                deleted = true;
+                continue;
+                }
+            }
+        if(!deleted){
+            //Check if value is smaller than node and go left
+            if(erase_value < node -> value){
+                parent = node;
+                node = node -> left;
+                is_left = true;
+                }
+                
+            //Check if value is greater than node and go right
+            if(erase_value > node -> value){
+                parent = node;
+                node = node -> right;
+                is_left = false;
+                }
+            }
+        }
+        
+    AVL_Tree::inspect_delete(updated_node);
+    return 0;
+    }
+
+void AVL_Tree::inspect_delete(HNode* node){
+    int old_height;
+    HNode* y;
+    HNode* x;
+    
+    do{
+        old_height = node -> height;
+        if(AVL_Tree::get_balance_factor(node) > 1){
+            y = node -> left;
+            x = AVL_Tree::get_balance_factor(y) <=0 ? y -> right : y -> left;
+            node = AVL_Tree::rebalance(node, y, x);
+            } 
+        if(AVL_Tree::get_balance_factor(node) < -1){
+            y = node -> right;
+            x = AVL_Tree::get_balance_factor(y) <=0 ? y -> right : y -> left;
+            node = AVL_Tree::rebalance(node, y, x);
+            }
+        if(AVL_Tree::get_balance_factor(node) >= -1 && AVL_Tree::get_balance_factor(node) <= 1){
+            node -> height = AVL_Tree::calc_height(node);
+            }
+        }while(node != nullptr && node -> height != old_height);
+    }
+
+bool AVL_Tree::isEmpty(){
+    return AVL_Tree::root == nullptr;
+    }
