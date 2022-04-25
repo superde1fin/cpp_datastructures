@@ -81,7 +81,6 @@ BOOST_PYTHON_MODULE(cstruct){
     .def("erase", &AVL_Tree::erase)
     //.def("validate", &AVL_Tree::validate)
     .def("get_root", &AVL_Tree::get_root)
-
     ;
     }
     
