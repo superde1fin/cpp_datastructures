@@ -10,9 +10,6 @@ void test(stringstream& ss){
     }
 
 int main(){
-    int* a;
-    a[0] = 4;
-    cout << a[0];
-    
+
     return 0;
     }

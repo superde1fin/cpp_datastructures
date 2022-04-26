@@ -2,6 +2,8 @@
 #include <stdexcept>
 #include <string>
 #include <sstream>
+#include <stdio.h>
+#include <stdlib.h>
 #include "datastructures.h"
 
 using namespace std;
@@ -884,23 +886,43 @@ Item::Item(){
     Item::value = NULL;
     }
     
-//Min Heap
+//Heap
 //==================================================================================
-int MinHeap::get_left_index(int index){
+Heap::Heap(){}
+
+int Heap::get_left_index(int index){
     return 2*index + 1;
     }
 
-int MinHeap::get_right_index(int index){
+int Heap::get_right_index(int index){
     return 2*index + 2;
     }
 
-int MinHeap::get_parent_index(int index){
+int Heap::get_parent_index(int index){
     return (int)(index - 1)/2;
     }
     
-int MinHeap::length(){
-    return MinHeap::heap.size();
+int Heap::length(){
+    return Heap::heap.size();
     }
+    
+string Heap::toString(){
+    string result = "[";
+    stringstream ss;
+    for(int i = 0; i < Heap::length() - 1; i++){
+        ss.str(string());
+        ss << Heap::heap[i].id << ":" << Heap::heap[i].value;
+        result += ss.str() + ", ";
+        }
+    ss.str(string());
+    ss << Heap::heap[Heap::length() - 1].id << ":" << Heap::heap[Heap::length() - 1].value;
+    result += ss.str() + "]";
+    return result;
+    }
+
+//Min Heap
+//==================================================================================
+MinHeap::MinHeap() : Heap(){}
 
 int MinHeap::get_min(){
     if(MinHeap::length() == 0){
@@ -980,6 +1002,88 @@ void MinHeap::build_heap(int array[], int size){
         }
     }
 
+
+//Max Heap
+//==================================================================================
+MaxHeap::MaxHeap() : Heap(){}
+
+int MaxHeap::get_max(){
+    if(MaxHeap::length() == 0){
+        throw empty_heap_exc;
+        }else{
+            return MaxHeap::heap[0].value;
+            }
+    }
+
+int MaxHeap::extract_max(){
+    if(MaxHeap::length() == 0){
+        throw empty_heap_exc;
+        }
+        
+    int value = MaxHeap::heap[0].value;
+    if(MaxHeap::length() > 1){
+        Item last_element = MaxHeap::heap[MaxHeap::length() - 1];
+        MaxHeap::heap[0] = last_element;
+        MaxHeap::heap.pop_back();
+        MaxHeap::swift_down(0);
+        }else{
+            MaxHeap::heap.clear();
+            }
+    return value;
+    }
+
+void MaxHeap::swift_down(int index){
+        int left, right, swap_index, swap_left, swap_right;
+         
+        bool done = false;
+        while(!done){
+            left = get_left_index(index);
+            right = get_right_index(index);
+            swap_index = -1;
+            swap_left = -1;
+            swap_right = -1;
+            if(left < MaxHeap::length() && MaxHeap::heap[index].id < MaxHeap::heap[left].id){swap_left = left;}
+            if(right < MaxHeap::length() && MaxHeap::heap[index].id < MaxHeap::heap[right].id){swap_right = right;}
+            if(swap_left < 0 && swap_right < 0){
+                done = true;
+                continue;
+                }
+            
+            if(swap_left > 0 && swap_right > 0){
+                if(MaxHeap::heap[left].id > MaxHeap::heap[right].id){swap_index = left;}
+                else{swap_index = right;}
+            }else{swap_index = swap_left >swap_right ? swap_left : swap_right;}
+            
+            Item temp = MaxHeap::heap[index];
+            MaxHeap::heap[index] = MaxHeap::heap[swap_index];
+            MaxHeap::heap[swap_index] = temp;
+            index = swap_index;
+        }
+    }
+
+void MaxHeap::insert(int value, int id){
+        MaxHeap::heap.push_back(Item(id, value));
+        int index = MaxHeap::length() - 1;
+        int parent = get_parent_index(index);
+        Item temp;
+        while(MaxHeap::heap[parent].id < MaxHeap::heap[index].id && parent >= 0){
+            temp = MaxHeap::heap[index];
+            MaxHeap::heap[index] = MaxHeap::heap[parent];
+            index = parent;
+            parent = get_parent_index(index);
+        }
+    }
+    
+    
+void MaxHeap::build_heap(int array[], int size){
+    for(int i = 0; i < size; i++){
+        MaxHeap::heap.push_back(Item(i, array[i]));
+        }
+    int last_index = MaxHeap::length() - 1;
+    for(int i = MaxHeap::get_parent_index(last_index); i >= 0; i--){
+        MaxHeap::swift_down(i);
+        }
+    }
 
 
 

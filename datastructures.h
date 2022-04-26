@@ -196,21 +196,38 @@ class Item{
         int id;
         int value;
     Item(int, int);
+    Item();
     };
     
-class MinHeap{
+class Heap{
     protected:
         vector<Item> heap;
     public:
-    int get_left_index(int);
-    int get_right_index(int);
-    int get_parent_index(int);
-    int length();
-    int get_min();
-    int extract_min();
-    void swift_down(int);
-    void insert(int, int);
-    void build_heap(int*, int);
-    string toString();
+        Heap();
+        int get_left_index(int);
+        int get_right_index(int);
+        int get_parent_index(int);
+        int length();
+        string toString();
+        int extract_front();
+    };
     
+class MinHeap: public Heap{
+    public:
+    MinHeap();
+        int get_min();
+        int extract_min();
+        void swift_down(int);
+        void insert(int, int);
+        void build_heap(int*, int);
+    };
+    
+class MaxHeap: public Heap{
+    public:
+    MaxHeap();
+        int get_max();
+        int extract_max();
+        void swift_down(int);
+        void insert(int, int);
+        void build_heap(int*, int);
     };

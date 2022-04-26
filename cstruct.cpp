@@ -82,6 +82,22 @@ BOOST_PYTHON_MODULE(cstruct){
     //.def("validate", &AVL_Tree::validate)
     .def("get_root", &AVL_Tree::get_root)
     ;
+    
+    class_<MinHeap>("MinHeap", init<>())
+    .def("get_min", &MinHeap::get_min)
+    .def("extract_min", &MinHeap::extract_min)
+    .def("length", &MinHeap::length)
+    .def("insert", &MinHeap::insert)
+    .def("build_heap", &MinHeap::build_heap)
+    ;
+    
+    class_<MaxHeap>("MaxHeap", init<>())
+    .def("get_max", &MaxHeap::get_max)
+    .def("extract_max", &MaxHeap::extract_max)
+    .def("length", &MaxHeap::length)
+    .def("insert", &MaxHeap::insert)
+    .def("build_heap", &MaxHeap::build_heap)
+    ;
     }
     
 
