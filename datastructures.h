@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <vector>
 
 using namespace std;
 
@@ -188,4 +189,28 @@ class AVL_Tree{
     int get_balance_factor(HNode*);
     HNode* rebalance(HNode*, HNode*, HNode*);
     HNode get_root();
+    };
+    
+class Item{
+    public:
+        int id;
+        int value;
+    Item(int, int);
+    };
+    
+class MinHeap{
+    protected:
+        vector<Item> heap;
+    public:
+    int get_left_index(int);
+    int get_right_index(int);
+    int get_parent_index(int);
+    int length();
+    int get_min();
+    int extract_min();
+    void swift_down(int);
+    void insert(int, int);
+    void build_heap(int*, int);
+    string toString();
+    
     };

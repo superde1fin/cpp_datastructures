@@ -19,6 +19,10 @@ class EmptyLinkedListException: public runtime_error{
     public: EmptyLinkedListException(): runtime_error("Empty Linked List"){}
     }empty_linkedlist_exc;
     
+class EmptyHeapException: public runtime_error{
+    public: EmptyHeapException(): runtime_error("Empty Heap"){}
+    }empty_heap_exc;
+    
     
 //Node
 //==================================================================================
@@ -867,3 +871,122 @@ void AVL_Tree::inspect_delete(HNode* node){
 bool AVL_Tree::isEmpty(){
     return AVL_Tree::root == nullptr;
     }
+    
+//Item
+//==================================================================================
+Item::Item(int id, int value){
+    Item::id = id;
+    Item::value = value;
+    }
+
+Item::Item(){
+    Item::id = NULL;
+    Item::value = NULL;
+    }
+    
+//Min Heap
+//==================================================================================
+int MinHeap::get_left_index(int index){
+    return 2*index + 1;
+    }
+
+int MinHeap::get_right_index(int index){
+    return 2*index + 2;
+    }
+
+int MinHeap::get_parent_index(int index){
+    return (int)(index - 1)/2;
+    }
+    
+int MinHeap::length(){
+    return MinHeap::heap.size();
+    }
+
+int MinHeap::get_min(){
+    if(MinHeap::length() == 0){
+        throw empty_heap_exc;
+        }else{
+            return MinHeap::heap[0].value;
+            }
+    }
+
+int MinHeap::extract_min(){
+    if(MinHeap::length() == 0){
+        throw empty_heap_exc;
+        }
+        
+    int value = MinHeap::heap[0].value;
+    if(MinHeap::length() > 1){
+        Item last_element = MinHeap::heap[MinHeap::length() - 1];
+        MinHeap::heap[0] = last_element;
+        MinHeap::heap.pop_back();
+        MinHeap::swift_down(0);
+        }else{
+            MinHeap::heap.clear();
+            }
+    return value;
+    }
+
+void MinHeap::swift_down(int index){
+        int left, right, swap_index, swap_left, swap_right;
+         
+        bool done = false;
+        while(!done){
+            left = get_left_index(index);
+            right = get_right_index(index);
+            swap_index = -1;
+            swap_left = -1;
+            swap_right = -1;
+            if(left < MinHeap::length() && MinHeap::heap[index].id > MinHeap::heap[left].id){swap_left = left;}
+            if(right < MinHeap::length() && MinHeap::heap[index].id > MinHeap::heap[right].id){swap_right = right;}
+            if(swap_left < 0 && swap_right < 0){
+                done = true;
+                continue;
+                }
+            
+            if(swap_left > 0 && swap_right > 0){
+                if(MinHeap::heap[left].id < MinHeap::heap[right].id){swap_index = left;}
+                else{swap_index = right;}
+            }else{swap_index = swap_left >swap_right ? swap_left : swap_right;}
+            
+            Item temp = MinHeap::heap[index];
+            MinHeap::heap[index] = MinHeap::heap[swap_index];
+            MinHeap::heap[swap_index] = temp;
+            index = swap_index;
+        }
+    }
+
+void MinHeap::insert(int value, int id){
+        MinHeap::heap.push_back(Item(id, value));
+        int index = MinHeap::length() - 1;
+        int parent = get_parent_index(index);
+        Item temp;
+        while(MinHeap::heap[parent].id > MinHeap::heap[index].id && parent >= 0){
+            temp = MinHeap::heap[index];
+            MinHeap::heap[index] = MinHeap::heap[parent];
+            index = parent;
+            parent = get_parent_index(index);
+        }
+    }
+    
+    
+void MinHeap::build_heap(int array[], int size){
+    for(int i = 0; i < size; i++){
+        MinHeap::heap.push_back(Item(i, array[i]));
+        }
+    int last_index = MinHeap::length() - 1;
+    for(int i = MinHeap::get_parent_index(last_index); i >= 0; i--){
+        MinHeap::swift_down(i);
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
