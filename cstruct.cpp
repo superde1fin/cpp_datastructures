@@ -89,6 +89,7 @@ BOOST_PYTHON_MODULE(cstruct){
     .def("length", &MinHeap::length)
     .def("insert", &MinHeap::insert)
     .def("build_heap", &MinHeap::build_heap)
+    .def("toString", &MinHeap::toString)
     ;
     
     class_<MaxHeap>("MaxHeap", init<>())
@@ -97,6 +98,7 @@ BOOST_PYTHON_MODULE(cstruct){
     .def("length", &MaxHeap::length)
     .def("insert", &MaxHeap::insert)
     .def("build_heap", &MaxHeap::build_heap)
+    .def("toString", &MaxHeap::toString)
     ;
     }
     
