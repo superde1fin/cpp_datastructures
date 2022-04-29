@@ -4,6 +4,10 @@
 #include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <iomanip>
+#include <openssl/sha.h>
+#include <gmpxx.h>
+#include <math.h>
 #include "datastructures.h"
 
 using namespace std;
@@ -24,6 +28,10 @@ class EmptyLinkedListException: public runtime_error{
 class EmptyHeapException: public runtime_error{
     public: EmptyHeapException(): runtime_error("Empty Heap"){}
     }empty_heap_exc;
+    
+class WrongKeyException: public runtime_error{
+    public: WrongKeyException(): runtime_error("Key does not exist"){}
+    }wrong_key_exc;
     
     
 //Node
@@ -1086,11 +1094,141 @@ void MaxHeap::build_heap(int array[], int size){
     }
 
 
+//String Item
+//==================================================================================
+StringItem::StringItem(string key,  int value){
+    StringItem::key = key;
+    StringItem::value = value;
+    }
+    
+StringItem::StringItem(){
+    StringItem::key = NULL;
+    StringItem::value = NULL;
+    }
 
+//HashTable
+//==================================================================================
+HashTable::HashTable(int size){
+    HashTable::size = size;
+    HashTable::item_num = 0;
+    for(int i = 0; i < size; i++){
+        HashTable::array.push_back(NULL);
+        }
+    }
+    
+HashTable::HashTable(){
+    HashTable::size = 10;
+    HashTable::item_num = 0;
+    for(int i = 0; i < size; i++){
+        HashTable::array.push_back(NULL);
+        }
+    }
 
+int HashTable::hash_function(const string str){
+    unsigned char hash[SHA256_DIGEST_LENGTH];
+    SHA256_CTX sha256;
+    SHA256_Init(&sha256);
+    SHA256_Update(&sha256, str.c_str(), str.size());
+    SHA256_Final(hash, &sha256);
+    stringstream ss;
+    for(int i = 0; i < SHA256_DIGEST_LENGTH; i++)
+    {
+        ss << hex << setw(2) << setfill('0') << (int)hash[i];
+    }
+    string result = ss.str();
+    mpz_class hash_num = 0;
+    for(int i = 0; i < result.length(); i++){
+        int ascii_value = int(result[i]);
+        ss.str("");
+        ss << ascii_value;
+        hash_num = hash_num*int(pow(10, ss.str().length())) + ascii_value;
+        }
+    return hash_num.get_ui() % HashTable::size;
+    }
 
+int HashTable::get_index(string key){
+    int index = HashTable::hash_function(key);
+    for(int i = 0; i < HashTable::size; i ++){
+        StringItem item = HashTable::array[index];
+        if(item == NULL && !HashTable::deleted[index]){return NULL;}
+        else{if(item != NULL && item.key == key){return index;}
+            else{index = (index + 1) % HashTable::size;}
+            }
+        }
+    }
+    
+void HashTable::set(string key, int value){
+    int index = HashTable::hash_function(key)
+        int i = 0;
+        while(!done and i < HashTable::size){
+            //Empty undeleted slot
+            if(HashTable::array[index] == NULL && !HashTable::deleted[index]){
+                HashTable::array[index] = StringItem(key, value);
+                HashTable::item_num ++;
+                done = true;
+                continue;
+            }
+            //Empty deleted slot
+            else{
+            if(HashTable::array[index] == NULL && HashTable::deleted[index]){
+                int existing_index = HashTable::get_index(key);
+                if(existing_index == NULL){
+                    HashTable::array[index] = StringItem(key, value);
+                    HashTable::item_num ++;
+                }
+                else{
+                    HashTable::array[existing_index].value = value;
+                }
+                done = true;
+                continue;
+            }
+            //Full slot desired key
+            else{
+            if(HashTable::array[index].key == key){
+                HashTable::array[index].value = value;
+                done = true;
+                continue;
+            }
+            //Different key
+            else{
+                index = (index + 1) % self.__size
+            }
+                
 
+                }
+            }
+        i ++;
+        }
+                    
+    if(HashTable::item_num > 0.9*HashTable::size){
+        HashTable::resize();
+    }
+    }
+    
+int HashTable::get(string key){
+    int index = HashTable::get_index(key);
+    if(index != NULL){
+        return HashTable::array[index].value;
+        }
+    else{
+        throw wrong_key_exc;
+        }
+    }
 
+void HashTable:del(string key){
+    int index = HashTable::get_index(key);
+    if(index != NULL){
+        delete HashTable::array[index] ;
+        HashTable::array[index] = NULL;
+        HashTable::deleted[index] = true;
+        HashTable::item_num--;
+        }
+    else{
+        throw wrong_key_exc;
+        }
+    }
+
+bool HashTable::in(string key){return HashTable::get_index(key) != NULL;}
 
 
 
