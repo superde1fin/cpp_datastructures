@@ -9,9 +9,9 @@ using namespace std;
 class Node{
     protected:
         int value;
-            Node(int);
-        ~Node();
+        Node(int);
     public:
+    ~Node();
     int get_value();
     string toString();
     };
