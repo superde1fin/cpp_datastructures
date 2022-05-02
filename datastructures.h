@@ -236,27 +236,33 @@ class MaxHeap: public Heap{
 
 //==================================================================================
 class StringItem{
+    protected:
+            string key;
+            int value;
+            bool empty;
     public:
-        string key;
-        int value;
-        Item(string, int);
-        Item();
+        string get_key();
+        int get_value();
+        StringItem(string, int);
+        StringItem();
+    friend class HashTable;
     };
 
 //==================================================================================
 class HashTable{
     protected:
-    int item_num;
-    vector<int> array;
-    vector<bool> deleted;
-    int size;
-    int hash_function();
-    int get_index(string);
+        int item_num;
+        vector<StringItem> array;
+        vector<bool> deleted;
+        int size;
+        int hash_function(string);
+        int get_index(string);
     public:
-    HashTable();
-    ~HashTable();
-    void set(string, int);
-    int get(string);
-    void del(string);
-    bool in(string);
+        HashTable(int);
+        HashTable();
+        ~HashTable();
+        void set(string, int);
+        int get(string);
+        void del(string);
+        bool in(string);
     };

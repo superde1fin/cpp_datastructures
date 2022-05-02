@@ -13,9 +13,9 @@ TARGET = cstruct
 CFLAGS = --std=c++11
 
 $(TARGET).so: $(TARGET).o
-	g++ -shared -Wl,--export-dynamic $(TARGET).o -L$(BOOST_LIB) -l:libboost_python$(subst .,,$(PYTHON_VERSION)).so -L/usr/lib/python$(PYTHON_VERSION)/config -lpython$(PYTHON_VERSION) -o $(TARGET).so $(CFLAGS)
+	g++ -shared -Wl,--export-dynamic $(TARGET).o -L$(BOOST_LIB) -l:libboost_python$(subst .,,$(PYTHON_VERSION)).so -L/usr/lib/python$(PYTHON_VERSION)/config -lpython$(PYTHON_VERSION) -o $(TARGET).so $(CFLAGS) -lgmp -lssl -lcrypto
 
-$(TARGET).o: $(TARGET).cpp datastructures.h datastructures.hpp
+$(TARGET).o: $(TARGET).cpp datastructures.h datastructures.hpp Makefile
 	g++ -I$(PYTHON_INCLUDE) -I$(BOOST_INC) -fPIC -c $(TARGET).cpp $(CFLAGS)
 	objcopy --redefine-sym _ZN5boost6python15instance_holder8allocateEP7_objectmmm=_ZN5boost6python15instance_holder8allocateEP7_objectmm $(TARGET).o
 
