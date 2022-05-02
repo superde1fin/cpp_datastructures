@@ -4,6 +4,7 @@
 using namespace boost::python;
 
 
+
 BOOST_PYTHON_MODULE(cstruct){
     class_<SQNode>("SQNode", no_init);
     class_<Stack>("Stack", init<>())
@@ -83,22 +84,22 @@ BOOST_PYTHON_MODULE(cstruct){
     .def("get_root", &AVL_Tree::get_root)
     ;
     
-    class_<MinHeap>("MinHeap", init<>())
-    .def("get_min", &MinHeap::get_min)
-    .def("extract_min", &MinHeap::extract_min)
-    .def("length", &MinHeap::length)
-    .def("insert", &MinHeap::insert)
-    .def("build_heap", &MinHeap::build_heap)
-    .def("toString", &MinHeap::toString)
+    class_<MinHeap<int>>("MinHeap", init<>())
+    .def("get_min", &MinHeap<int>::get_min)
+    .def("extract_min", &MinHeap<int>::extract_min)
+    .def("length", &MinHeap<int>::length)
+    .def("insert", &MinHeap<int>::insert)
+    .def("build_heap", &MinHeap<int>::build_heap)
+    .def("toString", &MinHeap<int>::toString)
     ;
     
-    class_<MaxHeap>("MaxHeap", init<>())
-    .def("get_max", &MaxHeap::get_max)
-    .def("extract_max", &MaxHeap::extract_max)
-    .def("length", &MaxHeap::length)
-    .def("insert", &MaxHeap::insert)
-    .def("build_heap", &MaxHeap::build_heap)
-    .def("toString", &MaxHeap::toString)
+    class_<MaxHeap<int>>("MaxHeap", init<>())
+    .def("get_max", &MaxHeap<int>::get_max)
+    .def("extract_max", &MaxHeap<int>::extract_max)
+    .def("length", &MaxHeap<int>::length)
+    .def("insert", &MaxHeap<int>::insert)
+    .def("build_heap", &MaxHeap<int>::build_heap)
+    .def("toString", &MaxHeap<int>::toString)
     ;
     }
     
