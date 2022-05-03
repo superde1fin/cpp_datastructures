@@ -245,6 +245,7 @@ class StringItem{
         int get_value();
         StringItem(string, int);
         StringItem();
+        string toString();
     friend class HashTable;
     };
 
@@ -257,6 +258,7 @@ class HashTable{
         int size;
         int hash_function(string);
         int get_index(string);
+        void resize();
     public:
         HashTable(int);
         HashTable();
@@ -265,4 +267,6 @@ class HashTable{
         int get(string);
         void del(string);
         bool in(string);
+        string toString();
+        int get_item_num();
     };

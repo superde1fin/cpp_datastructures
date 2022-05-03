@@ -1109,6 +1109,16 @@ StringItem::StringItem(){
 string StringItem::get_key(){return StringItem::key;}
 int StringItem::get_value(){return StringItem::value;}
 
+string StringItem::toString(){
+    stringstream os;
+    if(!StringItem::empty){
+        os << StringItem::key << " : " << StringItem::value;
+    }else{
+        os << "[Empty Item]";
+    }
+    return os.str();
+    }
+
 //HashTable
 //==================================================================================
 HashTable::HashTable(int size){
@@ -1117,13 +1127,20 @@ HashTable::HashTable(int size){
     for(int i = 0; i < size; i++){
         HashTable::array.push_back(StringItem());
         }
+    for(int i = 0; i < size; i++){
+        HashTable::deleted.push_back(false);
+        }
     }
+
     
 HashTable::HashTable(){
     HashTable::size = 10;
     HashTable::item_num = 0;
     for(int i = 0; i < size; i++){
         HashTable::array.push_back(StringItem());
+        }
+    for(int i = 0; i < size; i++){
+        HashTable::deleted.push_back(false);
         }
     }
 
@@ -1153,7 +1170,7 @@ int HashTable::get_index(string key){
     int index = HashTable::hash_function(key);
     for(int i = 0; i < HashTable::size; i ++){
         StringItem item = HashTable::array[index];
-        if(!item.empty && !HashTable::deleted[index]){return NULL;}
+        if(item.empty && !HashTable::deleted[index]){return NULL;}
         else{if(!item.empty && item.key == key){return index;}
             else{index = (index + 1) % HashTable::size;}
             }
@@ -1197,16 +1214,41 @@ void HashTable::set(string key, int value){
         else{
             index = (index + 1) % HashTable::size;
         }
-            }
+        }
         }
     i ++;
     }
                     
     if(HashTable::item_num > 0.9*HashTable::size){
-        //HashTable::resize();
+        HashTable::resize();
     }
     }
     
+void HashTable::resize(){
+    vector<StringItem> old= HashTable::array;
+    HashTable::size *= 2;
+    HashTable::array.clear();
+    for(int i = 0; i < HashTable::size; i++){
+        if(i < int(HashTable::size/2)){
+        HashTable::deleted[i] = false;
+        HashTable::deleted.push_back(false);
+        }
+        HashTable::array.push_back(StringItem());
+    }
+    
+    HashTable::item_num = 0;
+    for(int i = 0; i < old.size(); i++){
+        if(!old[i].empty){            
+            HashTable::set(old[i].key, old[i].value);
+            }
+        }
+    }
+
+
+
+    
+    
+
 int HashTable::get(string key){
     int index = HashTable::get_index(key);
     if(index != NULL){
@@ -1232,5 +1274,28 @@ void HashTable::del(string key){
 
 bool HashTable::in(string key){return HashTable::get_index(key) != NULL;}
 
+HashTable::~HashTable(){
+    HashTable::array.clear();
+    HashTable::deleted.clear();
+    HashTable::size = NULL;
+    HashTable::item_num = NULL;
+    }
+
+string HashTable::toString(){
+    stringstream os;
+    os << '{';
+    int added_items = 0;
+    for(int i = 0; i < HashTable::size; i++){
+        if(!HashTable::array[i].empty){
+            added_items++;
+            os << array[i].toString();
+            if(added_items != HashTable::item_num){os << ", ";}
+            }
+        }
+    os << '}';
+    return os.str();
+    }
+    
+int HashTable::get_item_num(){return HashTable::item_num;}
 
 
