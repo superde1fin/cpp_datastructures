@@ -17,7 +17,6 @@ class Node{
     };
     
 //==================================================================================
-//Need to create getters and setters and make actual values private
 class SQNode : public Node{
     private:
         SQNode* next;
