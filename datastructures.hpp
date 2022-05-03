@@ -876,212 +876,232 @@ bool AVL_Tree::isEmpty(){
     
 //Item
 //==================================================================================
-Item::Item(int id, int value){
+template <class Item_Type>
+Item<Item_Type>::Item(int id, Item_Type value){
     Item::id = id;
     Item::value = value;
     }
-
-Item::Item(){
+    
+template <class Item_Type>
+Item<Item_Type>::Item(){
     Item::id = NULL;
     Item::value = NULL;
     }
     
 //Heap
 //==================================================================================
-Heap::Heap(){}
+template <class Item_Type>
+Heap<Item_Type>::Heap(){}
 
-int Heap::get_left_index(int index){
+template <class Item_Type>
+int Heap<Item_Type>::get_left_index(int index){
     return 2*index + 1;
     }
-
-int Heap::get_right_index(int index){
+    
+template <class Item_Type>
+int Heap<Item_Type>::get_right_index(int index){
     return 2*index + 2;
     }
 
-int Heap::get_parent_index(int index){
+template <class Item_Type>
+int Heap<Item_Type>::get_parent_index(int index){
     return (int)(index - 1)/2;
     }
     
-int Heap::length(){
+template <class Item_Type>
+int Heap<Item_Type>::length(){
     return Heap::heap.size();
     }
     
-string Heap::toString(){
+template <class Item_Type>
+string Heap<Item_Type>::toString(){
     string result = "[";
     stringstream ss;
-    for(int i = 0; i < Heap::length() - 1; i++){
+    for(int i = 0; i < Heap<Item_Type>::length() - 1; i++){
         ss.str(string());
-        ss << Heap::heap[i].id << ":" << Heap::heap[i].value;
+        ss << Heap<Item_Type>::heap[i].id << ":" << Heap<Item_Type>::heap[i].value;
         result += ss.str() + ", ";
         }
     ss.str(string());
-    ss << Heap::heap[Heap::length() - 1].id << ":" << Heap::heap[Heap::length() - 1].value;
+    ss << Heap<Item_Type>::heap[Heap<Item_Type>::length() - 1].id << ":" << Heap<Item_Type>::heap[Heap<Item_Type>::length() - 1].value;
     result += ss.str() + "]";
     return result;
+    }
+    
+template <class Item_Type>
+Item_Type Heap<Item_Type>::get_front(){
+    if(Heap<Item_Type>::length() == 0){
+        throw empty_heap_exc;
+        }else{
+            return Heap<Item_Type>::heap[0].value;
+            }
     }
 
 //Min Heap
 //==================================================================================
-MinHeap::MinHeap() : Heap(){}
+template <class Item_Type>
+MinHeap<Item_Type>::MinHeap() : Heap<Item_Type>(){}
 
-int MinHeap::get_min(){
-    if(MinHeap::length() == 0){
-        throw empty_heap_exc;
-        }else{
-            return MinHeap::heap[0].value;
-            }
+template <class Item_Type>
+Item_Type MinHeap<Item_Type>::get_min(){
+    return MinHeap<Item_Type>::get_front();
     }
 
-int MinHeap::extract_min(){
-    if(MinHeap::length() == 0){
+template <class Item_Type>
+Item_Type MinHeap<Item_Type>::extract_min(){
+    if(MinHeap<Item_Type>::length() == 0){
         throw empty_heap_exc;
         }
         
-    int value = MinHeap::heap[0].value;
-    if(MinHeap::length() > 1){
-        Item last_element = MinHeap::heap[MinHeap::length() - 1];
-        MinHeap::heap[0] = last_element;
-        MinHeap::heap.pop_back();
-        MinHeap::swift_down(0);
+    int value = MinHeap<Item_Type>::heap[0].value;
+    if(MinHeap<Item_Type>::length() > 1){
+        Item<Item_Type> last_element = MinHeap<Item_Type>::heap[MinHeap<Item_Type>::length() - 1];
+        MinHeap<Item_Type>::heap[0] = last_element;
+        MinHeap<Item_Type>::heap.pop_back();
+        MinHeap<Item_Type>::swift_down(0);
         }else{
-            MinHeap::heap.clear();
+            MinHeap<Item_Type>::heap.clear();
             }
     return value;
     }
 
-void MinHeap::swift_down(int index){
+template <class Item_Type>
+void MinHeap<Item_Type>::swift_down(int index){
         int left, right, swap_index, swap_left, swap_right;
          
         bool done = false;
         while(!done){
-            left = get_left_index(index);
-            right = get_right_index(index);
+            left = MinHeap<Item_Type>::get_left_index(index);
+            right = MinHeap<Item_Type>::get_right_index(index);
             swap_index = -1;
             swap_left = -1;
             swap_right = -1;
-            if(left < MinHeap::length() && MinHeap::heap[index].id > MinHeap::heap[left].id){swap_left = left;}
-            if(right < MinHeap::length() && MinHeap::heap[index].id > MinHeap::heap[right].id){swap_right = right;}
+            if(left < MinHeap<Item_Type>::length() && MinHeap<Item_Type>::heap[index].id > MinHeap<Item_Type>::heap[left].id){swap_left = left;}
+            if(right < MinHeap<Item_Type>::length() && MinHeap<Item_Type>::heap[index].id > MinHeap<Item_Type>::heap[right].id){swap_right = right;}
             if(swap_left < 0 && swap_right < 0){
                 done = true;
                 continue;
                 }
             
             if(swap_left > 0 && swap_right > 0){
-                if(MinHeap::heap[left].id < MinHeap::heap[right].id){swap_index = left;}
+                if(MinHeap<Item_Type>::heap[left].id < MinHeap<Item_Type>::heap[right].id){swap_index = left;}
                 else{swap_index = right;}
             }else{swap_index = swap_left >swap_right ? swap_left : swap_right;}
             
-            Item temp = MinHeap::heap[index];
-            MinHeap::heap[index] = MinHeap::heap[swap_index];
+            Item<Item_Type> temp = MinHeap<Item_Type>::heap[index];
+            MinHeap::heap[index] = MinHeap<Item_Type>::heap[swap_index];
             MinHeap::heap[swap_index] = temp;
             index = swap_index;
         }
     }
 
-void MinHeap::insert(int value, int id){
-        MinHeap::heap.push_back(Item(id, value));
+template <class Item_Type>
+void MinHeap<Item_Type>::insert(int value, Item_Type id){
+        MinHeap<Item_Type>::heap.push_back(Item<Item_Type>(id, value));
         int index = MinHeap::length() - 1;
-        int parent = get_parent_index(index);
-        Item temp;
-        while(MinHeap::heap[parent].id > MinHeap::heap[index].id && parent >= 0){
-            temp = MinHeap::heap[index];
-            MinHeap::heap[index] = MinHeap::heap[parent];
+        int parent = MinHeap<Item_Type>::get_parent_index(index);
+        Item<Item_Type> temp;
+        while(MinHeap<Item_Type>::heap[parent].id > MinHeap<Item_Type>::heap[index].id && parent >= 0){
+            temp = MinHeap<Item_Type>::heap[index];
+            MinHeap<Item_Type>::heap[index] = MinHeap<Item_Type>::heap[parent];
             index = parent;
-            parent = get_parent_index(index);
+            parent = MinHeap<Item_Type>::get_parent_index(index);
         }
     }
     
     
-void MinHeap::build_heap(int array[], int size){
+template <class Item_Type>
+void MinHeap<Item_Type>::build_heap(int array[], int size){
     for(int i = 0; i < size; i++){
-        MinHeap::heap.push_back(Item(i, array[i]));
+        MinHeap<Item_Type>::heap.push_back(Item<Item_Type>(i, array[i]));
         }
-    int last_index = MinHeap::length() - 1;
-    for(int i = MinHeap::get_parent_index(last_index); i >= 0; i--){
-        MinHeap::swift_down(i);
+    int last_index = MinHeap<Item_Type>::length() - 1;
+    for(int i = MinHeap<Item_Type>::get_parent_index(last_index); i >= 0; i--){
+        MinHeap<Item_Type>::swift_down(i);
         }
     }
 
 
 //Max Heap
 //==================================================================================
-MaxHeap::MaxHeap() : Heap(){}
+template <class Item_Type>
+MaxHeap<Item_Type>::MaxHeap() : Heap<Item_Type>(){}
 
-int MaxHeap::get_max(){
-    if(MaxHeap::length() == 0){
-        throw empty_heap_exc;
-        }else{
-            return MaxHeap::heap[0].value;
-            }
+template <class Item_Type>
+Item_Type MaxHeap<Item_Type>::get_max(){
+    return MaxHeap<Item_Type>::get_front();
     }
 
-int MaxHeap::extract_max(){
-    if(MaxHeap::length() == 0){
+template <class Item_Type>
+Item_Type MaxHeap<Item_Type>::extract_max(){
+    if(MaxHeap<Item_Type>::length() == 0){
         throw empty_heap_exc;
         }
         
-    int value = MaxHeap::heap[0].value;
-    if(MaxHeap::length() > 1){
-        Item last_element = MaxHeap::heap[MaxHeap::length() - 1];
-        MaxHeap::heap[0] = last_element;
-        MaxHeap::heap.pop_back();
-        MaxHeap::swift_down(0);
+    int value = MaxHeap<Item_Type>::heap[0].value;
+    if(MaxHeap<Item_Type>::length() > 1){
+        Item<Item_Type> last_element = MaxHeap<Item_Type>::heap[MaxHeap<Item_Type>::length() - 1];
+        MaxHeap<Item_Type>::heap[0] = last_element;
+        MaxHeap<Item_Type>::heap.pop_back();
+        MaxHeap<Item_Type>::swift_down(0);
         }else{
-            MaxHeap::heap.clear();
+            MaxHeap<Item_Type>::heap.clear();
             }
     return value;
     }
 
-void MaxHeap::swift_down(int index){
+template <class Item_Type>
+void MaxHeap<Item_Type>::swift_down(int index){
         int left, right, swap_index, swap_left, swap_right;
          
         bool done = false;
         while(!done){
-            left = get_left_index(index);
-            right = get_right_index(index);
+            left = MaxHeap<Item_Type>::get_left_index(index);
+            right = MaxHeap<Item_Type>::get_right_index(index);
             swap_index = -1;
             swap_left = -1;
             swap_right = -1;
-            if(left < MaxHeap::length() && MaxHeap::heap[index].id < MaxHeap::heap[left].id){swap_left = left;}
-            if(right < MaxHeap::length() && MaxHeap::heap[index].id < MaxHeap::heap[right].id){swap_right = right;}
+            if(left < MaxHeap<Item_Type>::length() && MaxHeap<Item_Type>::heap[index].id < MaxHeap<Item_Type>::heap[left].id){swap_left = left;}
+            if(right < MaxHeap<Item_Type>::length() && MaxHeap<Item_Type>::heap[index].id < MaxHeap<Item_Type>::heap[right].id){swap_right = right;}
             if(swap_left < 0 && swap_right < 0){
                 done = true;
                 continue;
                 }
             
             if(swap_left > 0 && swap_right > 0){
-                if(MaxHeap::heap[left].id > MaxHeap::heap[right].id){swap_index = left;}
+                if(MaxHeap<Item_Type>::heap[left].id > MaxHeap<Item_Type>::heap[right].id){swap_index = left;}
                 else{swap_index = right;}
             }else{swap_index = swap_left >swap_right ? swap_left : swap_right;}
             
-            Item temp = MaxHeap::heap[index];
-            MaxHeap::heap[index] = MaxHeap::heap[swap_index];
-            MaxHeap::heap[swap_index] = temp;
+            Item<Item_Type> temp = MaxHeap<Item_Type>::heap[index];
+            MaxHeap<Item_Type>::heap[index] = MaxHeap<Item_Type>::heap[swap_index];
+            MaxHeap<Item_Type>::heap[swap_index] = temp;
             index = swap_index;
         }
     }
 
-void MaxHeap::insert(int value, int id){
-        MaxHeap::heap.push_back(Item(id, value));
-        int index = MaxHeap::length() - 1;
-        int parent = get_parent_index(index);
-        Item temp;
-        while(MaxHeap::heap[parent].id < MaxHeap::heap[index].id && parent >= 0){
-            temp = MaxHeap::heap[index];
-            MaxHeap::heap[index] = MaxHeap::heap[parent];
+template <class Item_Type>
+void MaxHeap<Item_Type>::insert(int value,Item_Type  id){
+        MaxHeap<Item_Type>::heap.push_back(Item<Item_Type>(id, value));
+        int index = MaxHeap<Item_Type>::length() - 1;
+        int parent = MaxHeap<Item_Type>::get_parent_index(index);
+        Item<Item_Type> temp;
+        while(MaxHeap<Item_Type>::heap[parent].id < MaxHeap<Item_Type>::heap[index].id && parent >= 0){
+            temp = MaxHeap<Item_Type>::heap[index];
+            MaxHeap<Item_Type>::heap[index] = MaxHeap<Item_Type>::heap[parent];
             index = parent;
-            parent = get_parent_index(index);
+            parent = MaxHeap<Item_Type>::get_parent_index(index);
         }
     }
     
-    
-void MaxHeap::build_heap(int array[], int size){
+template <class Item_Type>
+void MaxHeap<Item_Type>::build_heap(int array[], int size){
     for(int i = 0; i < size; i++){
-        MaxHeap::heap.push_back(Item(i, array[i]));
+        MaxHeap<Item_Type>::heap.push_back(Item<Item_Type>(i, array[i]));
         }
-    int last_index = MaxHeap::length() - 1;
-    for(int i = MaxHeap::get_parent_index(last_index); i >= 0; i--){
-        MaxHeap::swift_down(i);
+    int last_index = MaxHeap<Item_Type>::length() - 1;
+    for(int i = MaxHeap<Item_Type>::get_parent_index(last_index); i >= 0; i--){
+        MaxHeap<Item_Type>::swift_down(i);
         }
     }
 

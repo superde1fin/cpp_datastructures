@@ -191,17 +191,20 @@ class AVL_Tree{
     HNode get_root();
     };
     
+template <class Item_Type>
 class Item{
     public:
         int id;
-        int value;
-    Item(int, int);
+        Item_Type value;
+    Item(int, Item_Type);
     Item();
     };
     
+
+template <class Item_Type>
 class Heap{
     protected:
-        vector<Item> heap;
+        vector<Item<Item_Type>> heap;
     public:
         Heap();
         int get_left_index(int);
@@ -209,25 +212,27 @@ class Heap{
         int get_parent_index(int);
         int length();
         string toString();
-        int extract_front();
+        Item_Type get_front();
     };
     
-class MinHeap: public Heap{
+template <class Item_Type>
+class MinHeap: public Heap<Item_Type>{
     public:
     MinHeap();
-        int get_min();
-        int extract_min();
+        Item_Type get_min();
+        Item_Type extract_min();
         void swift_down(int);
-        void insert(int, int);
+        void insert(int, Item_Type);
         void build_heap(int*, int);
     };
     
-class MaxHeap: public Heap{
+template <class Item_Type>
+class MaxHeap: public Heap<Item_Type>{
     public:
     MaxHeap();
-        int get_max();
-        int extract_max();
+        Item_Type get_max();
+        Item_Type extract_max();
         void swift_down(int);
-        void insert(int, int);
+        void insert(int, Item_Type);
         void build_heap(int*, int);
     };
