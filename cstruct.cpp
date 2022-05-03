@@ -101,6 +101,21 @@ BOOST_PYTHON_MODULE(cstruct){
     .def("build_heap", &MaxHeap<int>::build_heap)
     .def("toString", &MaxHeap<int>::toString)
     ;
+    
+    class_<StringItem>("StringItem", no_init)
+    .def("get_key", &StringItem::get_key)
+    .def("get_value", &StringItem::get_value)
+    ;
+    
+    class_<HashTable>("HashTable", init<>())
+    .def(init<int>())
+    .def("__setitem__", &HashTable::set)
+    .def("__getitem__", &HashTable::get)
+    .def("__delitem__", &HashTable::del)
+    .def("__contains__", &HashTable::in)
+    .def("__str__", &HashTable::toString)
+    .def("__len__", &HashTable::get_item_num)
+    ; 
     }
     
 

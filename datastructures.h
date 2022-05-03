@@ -15,6 +15,7 @@ class Node{
     int get_value();
     string toString();
     };
+    
 //==================================================================================
 //Need to create getters and setters and make actual values private
 class SQNode : public Node{
@@ -235,4 +236,42 @@ class MaxHeap: public Heap<Item_Type>{
         void swift_down(int);
         void insert(int, Item_Type);
         void build_heap(int*, int);
+    };
+    
+
+//==================================================================================
+class StringItem{
+    protected:
+            string key;
+            int value;
+            bool empty;
+    public:
+        string get_key();
+        int get_value();
+        StringItem(string, int);
+        StringItem();
+        string toString();
+    friend class HashTable;
+    };
+
+//==================================================================================
+class HashTable{
+    protected:
+        int item_num;
+        vector<StringItem> array;
+        vector<bool> deleted;
+        int size;
+        int hash_function(string);
+        int get_index(string);
+        void resize();
+    public:
+        HashTable(int);
+        HashTable();
+        ~HashTable();
+        void set(string, int);
+        int get(string);
+        void del(string);
+        bool in(string);
+        string toString();
+        int get_item_num();
     };
