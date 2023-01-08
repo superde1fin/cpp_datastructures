@@ -1,5 +1,5 @@
 #include <boost/python.hpp>
-#include "datastructures.hpp"
+#include "datastructures.cpp"
 
 using namespace boost::python;
 

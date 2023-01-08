@@ -1,1321 +1,276 @@
 #include <iostream>
-#include <stdexcept>
 #include <string>
 #include <sstream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <iomanip>
-#include <openssl/sha.h>
-#include <math.h>
-#include <gmpxx.h>
-#include "datastructures.h"
+#include <vector>
 
 using namespace std;
-//Exceptions
-//==================================================================================
-class EmptyStackException: public runtime_error{
-    public: EmptyStackException(): runtime_error("Empty Stack"){}
-    }empty_stack_exc;
 
-class EmptyQueueException: public runtime_error{
-    public: EmptyQueueException(): runtime_error("Empty Queue"){}
-    }empty_queue_exc;
-    
-class EmptyLinkedListException: public runtime_error{
-    public: EmptyLinkedListException(): runtime_error("Empty Linked List"){}
-    }empty_linkedlist_exc;
-    
-class EmptyHeapException: public runtime_error{
-    public: EmptyHeapException(): runtime_error("Empty Heap"){}
-    }empty_heap_exc;
-    
-class WrongKeyException: public runtime_error{
-    public: WrongKeyException(): runtime_error("Key does not exist"){}
-    }wrong_key_exc;
-    
-    
-//Node
 //==================================================================================
-Node::Node(int new_value){
-    Node::value = new_value;
-    }
+class Node{
+    protected:
+        int value;
+        Node(int);
+    public:
+    ~Node();
+    int get_value();
+    string toString();
+    };
     
-Node::~Node(){
-    Node::value = NULL;
-    }
-    
-string Node::toString(){
-    stringstream ss;
-    ss << Node::value;
-    return ss.str();
-    }
-
-int Node::get_value(){return Node::value;}
-
-//Stack - Queue Node (also used for Linked Lists)
 //==================================================================================
-SQNode::SQNode(int input_value, SQNode* next) : Node(input_value){
-    SQNode::next = next;
-    }
-SQNode::SQNode(int input_value) : Node(input_value){
-    SQNode::next = nullptr;
-    }
-SQNode::~SQNode(){
-    SQNode::next = nullptr;
-    }
-    
-SQNode SQNode::get_next(){return *SQNode::next;}
-
-//Stack
-//==================================================================================
-Stack::Stack(){
-        Stack::head = nullptr;
-        Stack::size = 0;
-        }
-Stack::~Stack(){
-        while(!Stack::isEmpty()){pop();}
-        }
+class SQNode : public Node{
+    private:
+        SQNode* next;
+        SQNode(int, SQNode*);
+        SQNode(int);
+    public:
+        ~SQNode();
+        SQNode get_next();
         
-bool Stack::isEmpty(){return Stack::size == 0;}
+    friend class Stack;
+    friend class Queue;
+    friend class LinkedList;
+    friend ostream& operator << (ostream& os, const SQNode& nd);
+    friend string toString(const SQNode& nd);
+    friend void initialize_node_constructors();
+    };
+    
+//==================================================================================
+class Queue{
+protected:
+        SQNode* front;
+        SQNode* rear;
+        int size;
+    public:
+        bool isEmpty();
+        int length();
+        Queue();
+        ~Queue();
+        int deQ();
+        SQNode enQ(int);
+        int peek_front();
+        int peek_rear();
+        string toString();
+    };
+
+//==================================================================================
+class Stack{
+    protected:
+        SQNode *head;
+        int size;
         
-int Stack::length(){return Stack::size;}
+    public:
+        Stack();
+        ~Stack();
+        bool isEmpty();
+        int length();
+        SQNode push(int);
+        int pop();
+        int peek();
+        string toString();
         
-SQNode Stack::push(int value){
-    Stack::head = new SQNode(value,Stack::head);
-    Stack::size ++;
-    return *Stack::head;
-    }
+    };
+    
+//==================================================================================
+class LinkedList{
+    protected:
+        SQNode* head;
+        SQNode* tail;
+        int size;
+    public:
+        LinkedList();
+        LinkedList(int*);
+        ~LinkedList();
+        bool isEmpty();
+        bool contains(SQNode&);
+        int length();
+        int peek();
+        int peek_tail();
+        SQNode insert_head(int);
+        int remove_head();
+        int remove_tail();
+        SQNode insert_tail(int);
+        //Search by value
+        SQNode search(int);
+        //Remove by value
+        int remove(int);
+        int remove(SQNode&);
+        SQNode insert_after(SQNode&, int);
+        //insert after value
+        SQNode insert_after(int, int);
+        //insert before a value
+        SQNode insert_before(int, int);
+        SQNode insert_before(SQNode&, int);
+        //insert at an index
+        SQNode insert_at(int, int);
+        void invert();
+        int remove_after(SQNode&);
+        //Remove last by value
+        int remove_last(int);
+        void flatten();
+    };
+    
+    
+//==================================================================================
+class BTNode : public Node{
+    protected:
+        BTNode* left;
+        BTNode* right;
+        BTNode(int);
+        BTNode(int, BTNode*, BTNode*);
+    
+    public:
+        ~BTNode();
+        BTNode get_right();
+        BTNode get_left();
+    
+    friend class BinarySearchTree;
+    };
+
+//==================================================================================
+class BinarySearchTree{
+    protected:
+        BTNode* root;
+    
+    public:
+        BinarySearchTree();
+        ~BinarySearchTree();
+        BTNode get_root();
+        bool isEmpty();
+        BTNode insert(int);
+        int erase(int);
+        bool validate();
+        bool validate_subtree(BTNode*);
+        void delete_subtree(BTNode*);
+        string inorder();
+        void inorder_parser(BTNode*, stringstream&);
+        string preorder();
+        void preorder_parser(BTNode*, stringstream&);
+        string postorder();
+        void postorder_parser(BTNode*, stringstream&);
+    };
+
+
+class HNode : public Node{
+    protected:
+        HNode(int);
+        int height;
+        HNode* parent;
+        HNode* right;
+        HNode* left;
         
-int Stack::pop(){
-    if (Stack::isEmpty()){
-        throw empty_stack_exc;
-        }
-    else{
-        SQNode* removed = Stack::head;
-        int value = removed -> value;
-        Stack::head = Stack::head -> next;
-        delete removed;
-        Stack::size --;
-        return value;
-    }
-}
-
-int Stack::peek(){
-    if(Stack::isEmpty()){
-            throw empty_stack_exc;
-            }
-        return Stack::head -> value;
-    }
-    
-string Stack::toString() {
-        string result = "Top -> ";
-        SQNode* node = Stack::head;
-        while(node){
-            result = result + "[" + node -> toString() + "]";
-            node = node -> next;
-        }
-        result += " <- Bottom";
-        return result;
-    }
-    
-    
-//Queue
-//==================================================================================
-Queue::Queue(){
-    Queue::front = nullptr;
-    Queue::rear = nullptr;
-    Queue::size = 0;
-    }
-
-Queue::~Queue(){
-    Queue::front = nullptr;
-    Queue::rear = nullptr;
-    Queue::size = NULL;
-    }
-    
-bool Queue::isEmpty(){return Queue::size == 0;}
-
-int Queue::length(){return Queue::size;}
-
-int Queue::deQ(){
-    if (Queue::isEmpty()){throw empty_queue_exc;}
-    else{
-        SQNode* removed = Queue::front;
-        int return_value = removed -> value;
-        Queue::front = front -> next;
-        if(removed == Queue::rear){Queue::rear = nullptr;}
-        delete removed;
-        Queue::size--;
-        return return_value;
-        }
-    }
-    
-SQNode Queue::enQ(int input_value){
-    SQNode* new_node = new SQNode(input_value);
-    if(Queue::isEmpty()){
-        Queue::rear = new_node;
-        Queue::front = new_node;
-        }else{
-            Queue::rear -> next = new_node;
-            Queue::rear = new_node;
-            }
-    Queue::size++;
-    return *Queue::rear;
-    }
-    
-int Queue::peek_front(){if(!Queue::isEmpty()){return Queue::front -> value;}else throw empty_queue_exc;}
-int Queue::peek_rear(){if(!Queue::isEmpty()){return Queue::rear -> value;}else throw empty_queue_exc;}
-
-string Queue::toString() {
-        string result = "Front -> ";
-        SQNode* node = Queue::front;
-        while(node){
-            result = result + "[" + node -> toString() + "]";
-            node = node -> next;
-        }
-        result += " <- Rear";
-        return result;
-    }
-
-//Linked List
-//==================================================================================
-LinkedList::LinkedList(){
-    LinkedList::head = nullptr;
-    LinkedList::tail = nullptr;
-    LinkedList::size = 0;
-    }
-    
-LinkedList::LinkedList(int* array){
-    int arr_len = *(&array + 1) - array;
-    LinkedList::size = 0;
-    for(int i = 0; i < arr_len; i++){
-        LinkedList::insert_head(array[i]);
-        }
-    }
-
-bool LinkedList::isEmpty(){return LinkedList::size == 0;}
-
-int LinkedList::length(){return LinkedList::size;}
-
-SQNode LinkedList::insert_head(int value){
-    SQNode* new_node = new SQNode(value, LinkedList::head);
-    if(LinkedList::tail == nullptr){LinkedList::tail = new_node;}
-    LinkedList::size++;
-    return *new_node;
-    }
-    
-SQNode LinkedList::insert_tail(int value){
-    SQNode* new_node = new SQNode(value);
-    if(LinkedList::isEmpty()){
-        LinkedList::head = new_node;
-        LinkedList::tail = new_node;
-        }else{
-            LinkedList::tail -> next = new_node;
-            LinkedList::tail = new_node;
-            }
-    LinkedList::size++;
-    return *new_node;
-    }
-
-LinkedList::~LinkedList(){
-    while(!LinkedList::isEmpty()){
-        LinkedList::remove_head();
-        }
-    LinkedList::size = NULL;
-    }
-
-//O(1)
-int LinkedList::remove_head(){
-    if (LinkedList::isEmpty()){throw empty_linkedlist_exc;}
-    else{
-        SQNode* removed = LinkedList::head;
-        int return_value = removed -> value;
-        LinkedList::head = head -> next;
-        if(LinkedList::tail == removed){LinkedList::tail = nullptr;}
-        delete removed;
-        LinkedList::size--;
-        return return_value;
-        }
-    }
-
-//O(n)
-int LinkedList::remove_tail(){
-    if (LinkedList::isEmpty()){throw empty_linkedlist_exc;}
-    else{
-        SQNode* node = LinkedList::head;
-        while(node -> next != LinkedList::tail){node = node -> next;}
-        LinkedList::tail = node;
-        int return_value = node -> next -> value;
-        delete node -> next;
-        LinkedList::size--;
-        return return_value;
-        }
-    }
-    
-int LinkedList::peek(){return LinkedList::head -> value;}
-
-int LinkedList::peek_tail(){return LinkedList::tail -> value;}
-
-bool LinkedList::contains(SQNode& lookup_node){
-    if (LinkedList::isEmpty()){throw empty_linkedlist_exc;}
-    for(SQNode* node = LinkedList::head; node != nullptr; node = node -> next){
-        if(node == &lookup_node){return true;}
-        }
-    return false;
-    }
-
-//searches for the first occurande
-SQNode LinkedList::search(int value){
-    SQNode* node;
-    for(node = LinkedList::head; node != nullptr || node -> value != value; node = node -> next);
-    if(node == nullptr){return NULL;}else{return *node;}
-    }
-    
-int LinkedList::remove(int value){
-    SQNode* node = LinkedList::head;
-    if(node -> value == value){return LinkedList::remove_head();}
-    while(node -> next != nullptr || node -> next -> value != value){node = node -> next;}
-    if(node -> next == nullptr){return NULL;}
-    SQNode* to_del = node -> next;
-    int return_value = to_del -> value;
-    node -> next = node -> next -> next;
-    delete to_del;
-    return return_value;
-    }
-    
-int LinkedList::remove(SQNode& to_remove){
-    SQNode* node = LinkedList::head;
-    if(node == &to_remove){return LinkedList::remove_head();}
-    while(node -> next != nullptr || node -> next != &to_remove){node = node -> next;}
-    if(node -> next == nullptr){return NULL;}
-    SQNode* to_del = node -> next;
-    int return_value = to_del -> value;
-    node -> next = node -> next -> next;
-    delete to_del;
-    return return_value;
-    }
-    
-//Insert after a node
-//O(n)
-SQNode LinkedList::insert_after(SQNode& prev_node, int new_value){
-    if(!LinkedList::contains(prev_node)){return NULL;}
-    else{
-        prev_node.next = new SQNode(new_value, prev_node.next);
-        LinkedList::size++;
-        return *(prev_node.next);
-        }
-    }
-    
-SQNode LinkedList::insert_after(int prev_value, int new_value){
-    SQNode* node;
-    for(node = LinkedList::head; node != nullptr || node -> value != prev_value; node = node -> next);
-    if(node == nullptr){return NULL;}
-    else{
-        node -> next = new SQNode(new_value, node -> next);
-        LinkedList::size++;
-        return *(node -> next);
-        }
-    }
-
-//Insert before node
-SQNode LinkedList::insert_before(SQNode& next_node, int new_value){
-    SQNode* node;
-    for(node = LinkedList::head; node -> next != &next_node || node -> next != nullptr; node = node -> next);
-    if(node -> next == nullptr){return NULL;}
-    else{
-        node -> next = new SQNode(new_value, node -> next);
-        LinkedList::size++;
-        return *(node -> next);
-        }
-    }
-    
-//Insert before the first occurance of a value
-SQNode LinkedList::insert_before(int next_value, int new_value){
-    SQNode* node;
-    for(node = LinkedList::head; node -> next -> value != next_value || node -> next != nullptr; node = node -> next);
-    if(node -> next == nullptr){return NULL;}
-    else{
-        node -> next = new SQNode(new_value, node -> next);
-        LinkedList::size++;
-        return *(node -> next);
-        }
-    }
-
-//Insert at index
-SQNode LinkedList::insert_at(int index, int new_value){
-    if(index > size -1){return NULL;}
-    if(index == 0){return LinkedList::insert_head(new_value);}
-    SQNode* node = LinkedList::head;
-    for(int i = 0; i < index; i++){node = node -> next;}
-    node -> next = new SQNode(new_value, node -> next);
-    LinkedList::size++;
-    return *(node -> next);
-    }
-    
-    
-void LinkedList::invert(){
-        if(LinkedList::size > 1){
-        SQNode* previous = LinkedList::head;
-        SQNode* current = previous -> next;
-        SQNode* following = current -> next;
-        LinkedList::head -> next -> next = LinkedList::head;
-        LinkedList::head -> next = nullptr;
-        while(following != nullptr){
-            current -> next = previous;
-            previous = current;
-            current = following;
-            following = following -> next;
-            }
-        SQNode* temp = LinkedList::tail;
-        LinkedList::tail = LinkedList::head;
-        LinkedList::head = temp;
-        }
-    }
-
-
-int LinkedList::remove_after(SQNode& node){
-        if(!LinkedList::contains(node)){return NULL;}
-    else{
-        if(LinkedList::size >= 2){
-            int to_ret = node.value;
-            node.next = node.next -> next;
-            LinkedList::size++;
-            return to_ret;
-            }
-        else{return NULL;}
-        }
-    }
-
-int LinkedList::remove_last(int value){
-    SQNode* prev_rem = nullptr;
-    SQNode* prev;
-    for(prev = LinkedList::head; prev -> next != nullptr; prev =  prev -> next){
-        if(prev -> next -> value == value){prev_rem = prev;}
-        }
-    if(prev_rem == nullptr){
-        if(LinkedList::head -> value == value){
-            return LinkedList::remove_head();
-            }else{return NULL;}
-        }else{
-            SQNode* to_del = prev_rem -> next;
-            if(to_del == LinkedList::tail){return LinkedList::remove_tail();}
-            int return_value = to_del -> value;
-            prev_rem -> next = prev_rem -> next -> next;
-            return return_value;
-            }
-    }
-
-//BInary Tree Node
-//==================================================================================
-BTNode::BTNode(int new_value) : Node(new_value){
-    BTNode::left = nullptr;
-    BTNode::right = nullptr;
-    }
-    
-//Need to make it impossible to pass variables without their names
-//BTNode::BTNode(int new_value, BTNode* left, BTNode* right){
-    //BTNode::left = left;
-    //BTNode::right = right;
-    //}
-    
-BTNode::~BTNode(){
-    BTNode::value = NULL;
-    BTNode::left = nullptr;
-    BTNode::right = nullptr;
-    }
-    
-BTNode BTNode::get_right(){return *BTNode::right;}
-BTNode BTNode::get_left(){return *BTNode::left;}
-
-//Binary Search Tree
-//==================================================================================
-BinarySearchTree::BinarySearchTree(){
-    BinarySearchTree::root = nullptr;
-    }
-    
-void BinarySearchTree::delete_subtree(BTNode* root){
-    if(root != nullptr){
-        BinarySearchTree::delete_subtree(root -> left);
-        root -> left = nullptr;
-        BinarySearchTree::delete_subtree(root -> left);
-        root -> left = nullptr;
-        root -> value = NULL;
-        }
-    }
-    
-BTNode BinarySearchTree::get_root(){return *BinarySearchTree::root;}
-    
-BinarySearchTree::~BinarySearchTree(){
-    BinarySearchTree::delete_subtree(BinarySearchTree::root);
-    }
-    
-bool BinarySearchTree::validate_subtree(BTNode* root){
-    if(root != nullptr){
-        bool is_valid = true;
-        if(root -> right != nullptr && root -> left != nullptr){
-            is_valid = (root -> left -> value <= root -> value) && (root -> right -> value >= root -> value);
-            }
-        if(root -> right == nullptr && root -> left != nullptr){
-            is_valid = (root -> left -> value <= root -> value) ;
-            }
-        if(root -> right != nullptr && root -> left == nullptr){
-            is_valid = (root -> right-> value >= root -> value) ;
-            }
-            
-        return is_valid && validate_subtree(root -> left) && validate_subtree(root -> right);
-        }
-    else{return true;}
-    }
-
-bool BinarySearchTree::validate(){
-    return BinarySearchTree::validate_subtree(BinarySearchTree::root);
-}
-
-bool BinarySearchTree::isEmpty(){
-    return BinarySearchTree::root == nullptr;
-    }
-
-BTNode BinarySearchTree::insert(int new_value){
-    BTNode* new_node = new BTNode(new_value);
-    if(BinarySearchTree::isEmpty()){
-        BinarySearchTree::root = new_node;
-        return *BinarySearchTree::root;
-        }
-    BTNode* node = BinarySearchTree::root;
-    bool placed = false;
-    while(!placed){
-        if(new_value >= node -> value){
-            if(node -> right != nullptr){
-                node = node -> right;
-                }else{
-                    //If no node than place new
-                    node -> right = new_node;
-                    placed = true;
-                    }
-            }else{
-                if(node -> left != nullptr){
-                    node = node -> left;
-                    }else{
-                        node -> left = new_node;
-                        placed = true;
-                        }
-                }
-        }
-    return *new_node;
-    }
-
-
-int BinarySearchTree::erase(int erase_value){
-    if(BinarySearchTree::isEmpty()){return -1;}
-    BTNode* parent = BinarySearchTree::root;
-    BTNode* node = parent;
-    bool is_left;
-    bool deleted = false;
-    while(deleted == 0 && node != nullptr){
-        //If found node check for four conditions has left, has right, has both, or has niether 
-        if(node -> value == erase_value){
-            //Has both
-            if(node -> right != nullptr && node -> left != nullptr){
-                //Finding successor from the right (smallest value)
-                BTNode* successor;
-                for(successor = node -> right; successor -> left != nullptr; successor = successor -> left){
-                    parent = successor;
-                    }
-                //Copy successor's value to the node that has to be removed
-                node -> value = successor -> value;
-                //Set node to successor for further checks to remove it
-                node = successor;
-                is_left = true;
-                }
-            //Has niether (leaf)
-            if(node -> right == nullptr && node -> left == nullptr){
-                //No need to reparent if deleting a root
-                if(node != BinarySearchTree::root){
-                    if(is_left){parent -> left = nullptr;}else{parent -> right = nullptr;}
-                    }
-                delete node;
-                deleted = true;
-                continue;
-                }
-            //Has left
-            if(node -> right == nullptr && node -> left != nullptr){
-                if(node != BinarySearchTree::root){
-                    //Connecting node -> left to a parent
-                    if(is_left){parent -> left = node -> left;}else{parent -> right = node -> left;}
-                    }
-                delete node;
-                deleted = true;
-                continue;
-                }
-            //Has right
-            if(node -> right != nullptr && node -> left == nullptr){
-                if(node != BinarySearchTree::root){
-                    //Connecting node -> right to a parent
-                    if(is_left){parent -> left = node -> right;}else{parent -> right = node -> right;}
-                    }
-                delete node;
-                deleted = true;
-                continue;
-                }
-            }
-        if(!deleted){
-            //Check if value is smaller than node and go left
-            if(erase_value < node -> value){
-                parent = node;
-                node = node -> left;
-                is_left = true;
-                }
-                
-            //Check if value is greater than node and go right
-            if(erase_value > node -> value){
-                parent = node;
-                node = node -> right;
-                is_left = false;
-                }
-            }
-        }
-    return 0;
-    }
-
-void BinarySearchTree::inorder_parser(BTNode* root, stringstream& ss){
-    if(root != nullptr){
-        BinarySearchTree::inorder_parser(root -> left, ss);
-        ss << '[' << root -> value << ']';
-        BinarySearchTree::inorder_parser(root -> right, ss);
-    }
-    }
-
-string BinarySearchTree::inorder(){
-    stringstream ss;
-    inorder_parser(BinarySearchTree::root, ss);
-    return ss.str();
-    }
-
-void BinarySearchTree::preorder_parser(BTNode* root, stringstream& ss){
-    if(root != nullptr){
-        ss << '[' << root -> value << ']';
-        BinarySearchTree::preorder_parser(root -> left, ss);
-        BinarySearchTree::preorder_parser(root -> right, ss);
-    }
-    }
-
-string BinarySearchTree::preorder(){
-    stringstream ss;
-    preorder_parser(BinarySearchTree::root, ss);
-    return ss.str();
-    }
-    
-void BinarySearchTree::postorder_parser(BTNode* root, stringstream& ss){
-    if(root != nullptr){
-        BinarySearchTree::postorder_parser(root -> left, ss);
-        BinarySearchTree::postorder_parser(root -> right, ss);
-        ss << '[' << root -> value << ']';
-    }
-    }
-
-string BinarySearchTree::postorder(){
-    stringstream ss;
-    postorder_parser(BinarySearchTree::root, ss);
-    return ss.str();
-    }
-    
-//Height Node for AVL Trees
-//==================================================================================
-HNode::HNode(int new_value) : Node(new_value){
-    HNode::right = nullptr;
-    HNode::left = nullptr;
-    HNode::height = 1;
-    HNode::parent = nullptr;
-    }   
-    
-HNode::~HNode(){
-    HNode::height = NULL;
-    HNode::parent = nullptr;
-    }
-    
-HNode HNode::get_right(){return *HNode::right;}
-HNode HNode::get_left(){return *HNode::left;}
-HNode HNode::get_parent(){return *HNode::parent;}
-int HNode::get_height(){return HNode::height;}
-    
-    
-//AVL Tree
-//==================================================================================
-
-HNode AVL_Tree::get_root(){return *AVL_Tree::root;}
-
-AVL_Tree::AVL_Tree() {
-    AVL_Tree::root = nullptr;
-    }
-    
-AVL_Tree::~AVL_Tree(){
-    AVL_Tree::root = nullptr;
-    }
-
-//Standart AVL rotation where x, y, z are child, parent, and great parent respectively
-void AVL_Tree::rotate_left(HNode* x){
-    HNode* y = x -> parent;
-    HNode* z = y -> parent;
-    y -> right = x -> left;
-    x -> left = y;
-    if(z != nullptr){
-        if(y == z -> left){z -> left = x;}
-        else{z -> right = x;}
-        }
-    }
-
-void AVL_Tree::rotate_right(HNode* x){
-    HNode* y = x -> parent;
-    HNode* z = y -> parent;
-    y -> left = x -> right;
-    x -> right = y;
-    if(z != nullptr){
-        if(y == z -> left){z -> left = x;}
-        else{z -> right = x;}
-        }
-    }
-
-int AVL_Tree::calc_height(HNode* node){
-    if(node -> right != nullptr && node -> left != nullptr){
-        return node -> right -> height > node -> left -> height ? node -> right -> height +1 : node -> left -> height + 1;
-        }
-    if(node -> right == nullptr && node -> left != nullptr){return node -> left -> height +1;}
-    if(node -> right != nullptr && node -> left == nullptr){return node -> right -> height + 1;}
-    if(node -> right == nullptr && node -> left == nullptr){return 1;}
-    }
-    
-HNode AVL_Tree::insert(int new_value){
-    HNode* new_node = new HNode(new_value);
-    if(AVL_Tree::isEmpty()){
-        AVL_Tree::root = new_node;
-        return *AVL_Tree::root;
-        }
-    
-    HNode* node = AVL_Tree::root;
-    bool placed = false;
-    while(!placed){
-        if(new_value >= node -> value){
-            if(node -> right != nullptr){
-                node = node -> right;
-                }else{
-                    //If no node than place new
-                    node -> right = new_node;
-                    new_node -> parent = node;
-                    placed = true;
-                    }
-            }else{
-                if(node -> left != nullptr){
-                    node = node -> left;
-                    }else{
-                        node -> left = new_node;
-                        new_node -> parent = node;
-                        placed = true;
-                        }
-                }
-        }
+    public:
+        ~HNode();
+        int get_height();
+        HNode get_parent();
+        HNode get_right();
+        HNode get_left();
         
-    AVL_Tree::inspect_insert(new_node);
-    return *new_node;
-    }
+    friend class AVL_Tree;
+    };
 
-int AVL_Tree::get_balance_factor(HNode* node){
-    return (node -> left != nullptr ? node -> left -> height : 0) - (node -> right != nullptr ? node -> right -> height : 0);
-    }
 
-void AVL_Tree::inspect_insert(HNode* node){
-    HNode* parent = node -> parent;
-    HNode* gparent = parent -> parent;
-    parent -> height++;
-    int old_gparent_height;
-    
-    bool rebalanced = false;
-    do{
-        old_gparent_height = gparent -> height;
-        if(AVL_Tree::get_balance_factor(gparent) > 1){
-            rebalanced = AVL_Tree::rebalance(gparent, parent, node);
-            continue;
-            }else{
-                AVL_Tree::calc_height(gparent);
-                }
-        gparent = gparent -> parent;
-        parent = parent -> parent;
-        node = node ->parent;
-        }while(!rebalanced && gparent != nullptr && old_gparent_height != parent -> height);
-    
-    
-
-    }
-
-HNode* AVL_Tree::rebalance(HNode* gparent, HNode* parent, HNode* node){
-    if(parent = gparent -> left){
-        if(node = parent -> left){
-            //Left left case
-            AVL_Tree::rotate_right(parent);
-            parent -> height = AVL_Tree::calc_height(parent);
-            return parent;
-            }else{
-                //Left right case
-                AVL_Tree::rotate_left(node);
-                AVL_Tree::rotate_right(node); 
-                node -> height = AVL_Tree::calc_height(node);
-                return node;
-                }
-        }else{
-            if(node = parent -> left){
-            //Right left case
-                AVL_Tree::rotate_right(node);
-                AVL_Tree::rotate_left(node); 
-                node -> height = AVL_Tree::calc_height(node);
-                return node;
-            }else{
-                //Right right case
-                AVL_Tree::rotate_left(parent); 
-                parent -> height = AVL_Tree::calc_height(parent);
-                return parent;
-                }
-            }
-    }
-
-int AVL_Tree::erase(int erase_value){
-    if(AVL_Tree::isEmpty()){return -1;}
-    HNode* updated_node;
-    HNode* parent = AVL_Tree::root;
-    HNode* node = parent;
-    bool is_left;
-    bool deleted = false;
-    while(deleted == 0 && node != nullptr){
-        //If found node check for four conditions has left, has right, has both, or has niether 
-        if(node -> value == erase_value){
-            //Has both
-            if(node -> right != nullptr && node -> left != nullptr){
-                updated_node = parent;
-                //Finding successor from the right (smallest value)
-                HNode* successor;
-                for(successor = node -> right; successor -> left != nullptr; successor = successor -> left){
-                    parent = successor;
-                    }
-                //Copy successor's value to the node that has to be removed
-                node -> value = successor -> value;
-                //Set node to successor for further checks to remove it
-                node = successor;
-                is_left = true;
-                }
-            //Has niether (leaf)
-            if(node -> right == nullptr && node -> left == nullptr){
-                updated_node = parent;
-                //No need to reparent if deleting a root
-                if(node != AVL_Tree::root){
-                    if(is_left){parent -> left = nullptr;}else{parent -> right = nullptr;}
-                    }
-                delete node;
-                deleted = true;
-                continue;
-                }
-            //Has left
-            if(node -> right == nullptr && node -> left != nullptr){
-                updated_node = parent;
-                if(node != AVL_Tree::root){
-                    //Connecting node -> left to a parent
-                    if(is_left){parent -> left = node -> left;}else{parent -> right = node -> left;}
-                    }
-                delete node;
-                deleted = true;
-                continue;
-                }
-            //Has right
-            if(node -> right != nullptr && node -> left == nullptr){
-                updated_node = parent;
-                if(node != AVL_Tree::root){
-                    //Connecting node -> right to a parent
-                    if(is_left){parent -> left = node -> right;}else{parent -> right = node -> right;}
-                    }
-                delete node;
-                deleted = true;
-                continue;
-                }
-            }
-        if(!deleted){
-            //Check if value is smaller than node and go left
-            if(erase_value < node -> value){
-                parent = node;
-                node = node -> left;
-                is_left = true;
-                }
-                
-            //Check if value is greater than node and go right
-            if(erase_value > node -> value){
-                parent = node;
-                node = node -> right;
-                is_left = false;
-                }
-            }
-        }
-        
-    AVL_Tree::inspect_delete(updated_node);
-    return 0;
-    }
-
-void AVL_Tree::inspect_delete(HNode* node){
-    int old_height;
-    HNode* y;
-    HNode* x;
-    
-    do{
-        old_height = node -> height;
-        if(AVL_Tree::get_balance_factor(node) > 1){
-            y = node -> left;
-            x = AVL_Tree::get_balance_factor(y) <=0 ? y -> right : y -> left;
-            node = AVL_Tree::rebalance(node, y, x);
-            } 
-        if(AVL_Tree::get_balance_factor(node) < -1){
-            y = node -> right;
-            x = AVL_Tree::get_balance_factor(y) <=0 ? y -> right : y -> left;
-            node = AVL_Tree::rebalance(node, y, x);
-            }
-        if(AVL_Tree::get_balance_factor(node) >= -1 && AVL_Tree::get_balance_factor(node) <= 1){
-            node -> height = AVL_Tree::calc_height(node);
-            }
-        }while(node != nullptr && node -> height != old_height);
-    }
-
-bool AVL_Tree::isEmpty(){
-    return AVL_Tree::root == nullptr;
-    }
-    
-//Item
 //==================================================================================
-template <class Item_Type>
-Item<Item_Type>::Item(int id, Item_Type value){
-    Item::id = id;
-    Item::value = value;
-    }
+class AVL_Tree{
+    protected:
+    HNode* root;
+    public:
+    AVL_Tree();
+    ~AVL_Tree();
+    HNode insert(int);
+    int erase(int);
+    bool isEmpty();
+    bool validate_subtree(HNode*);
+    void rotate_left(HNode*);
+    void rotate_right(HNode*);
+    int calc_height(HNode*);
+    bool update_heights(HNode*);
+    void inspect_insert(HNode*);
+    void inspect_delete(HNode*);
+    int get_balance_factor(HNode*);
+    HNode* rebalance(HNode*, HNode*, HNode*);
+    HNode get_root();
+    };
     
 template <class Item_Type>
-Item<Item_Type>::Item(){
-    Item::id = NULL;
-    Item::value = NULL;
-    }
+class Item{
+    public:
+        int id;
+        Item_Type value;
+    Item(int, Item_Type);
+    Item();
+    };
     
-//Heap
+
+template <class Item_Type>
+class Heap{
+    protected:
+        vector<Item<Item_Type>> heap;
+    public:
+        Heap();
+        int get_left_index(int);
+        int get_right_index(int);
+        int get_parent_index(int);
+        int length();
+        string toString();
+        Item_Type get_front();
+    };
+    
+template <class Item_Type>
+class MinHeap: public Heap<Item_Type>{
+    public:
+    MinHeap();
+        Item_Type get_min();
+        Item_Type extract_min();
+        void swift_down(int);
+        void insert(int, Item_Type);
+        void build_heap(int*, int);
+    };
+    
+template <class Item_Type>
+class MaxHeap: public Heap<Item_Type>{
+    public:
+    MaxHeap();
+        Item_Type get_max();
+        Item_Type extract_max();
+        void swift_down(int);
+        void insert(int, Item_Type);
+        void build_heap(int*, int);
+    };
+    
+
 //==================================================================================
-template <class Item_Type>
-Heap<Item_Type>::Heap(){}
+class StringItem{
+    protected:
+            string key;
+            int value;
+            bool empty;
+    public:
+        string get_key();
+        int get_value();
+        StringItem(string, int);
+        StringItem();
+        string toString();
+    friend class HashTable;
+    };
 
-template <class Item_Type>
-int Heap<Item_Type>::get_left_index(int index){
-    return 2*index + 1;
-    }
-    
-template <class Item_Type>
-int Heap<Item_Type>::get_right_index(int index){
-    return 2*index + 2;
-    }
-
-template <class Item_Type>
-int Heap<Item_Type>::get_parent_index(int index){
-    return (int)(index - 1)/2;
-    }
-    
-template <class Item_Type>
-int Heap<Item_Type>::length(){
-    return Heap::heap.size();
-    }
-    
-template <class Item_Type>
-string Heap<Item_Type>::toString(){
-    string result = "[";
-    stringstream ss;
-    for(int i = 0; i < Heap<Item_Type>::length() - 1; i++){
-        ss.str(string());
-        ss << Heap<Item_Type>::heap[i].id << ":" << Heap<Item_Type>::heap[i].value;
-        result += ss.str() + ", ";
-        }
-    ss.str(string());
-    ss << Heap<Item_Type>::heap[Heap<Item_Type>::length() - 1].id << ":" << Heap<Item_Type>::heap[Heap<Item_Type>::length() - 1].value;
-    result += ss.str() + "]";
-    return result;
-    }
-    
-template <class Item_Type>
-Item_Type Heap<Item_Type>::get_front(){
-    if(Heap<Item_Type>::length() == 0){
-        throw empty_heap_exc;
-        }else{
-            return Heap<Item_Type>::heap[0].value;
-            }
-    }
-
-//Min Heap
 //==================================================================================
-template <class Item_Type>
-MinHeap<Item_Type>::MinHeap() : Heap<Item_Type>(){}
-
-template <class Item_Type>
-Item_Type MinHeap<Item_Type>::get_min(){
-    return MinHeap<Item_Type>::get_front();
-    }
-
-template <class Item_Type>
-Item_Type MinHeap<Item_Type>::extract_min(){
-    if(MinHeap<Item_Type>::length() == 0){
-        throw empty_heap_exc;
-        }
-        
-    int value = MinHeap<Item_Type>::heap[0].value;
-    if(MinHeap<Item_Type>::length() > 1){
-        Item<Item_Type> last_element = MinHeap<Item_Type>::heap[MinHeap<Item_Type>::length() - 1];
-        MinHeap<Item_Type>::heap[0] = last_element;
-        MinHeap<Item_Type>::heap.pop_back();
-        MinHeap<Item_Type>::swift_down(0);
-        }else{
-            MinHeap<Item_Type>::heap.clear();
-            }
-    return value;
-    }
-
-template <class Item_Type>
-void MinHeap<Item_Type>::swift_down(int index){
-        int left, right, swap_index, swap_left, swap_right;
-         
-        bool done = false;
-        while(!done){
-            left = MinHeap<Item_Type>::get_left_index(index);
-            right = MinHeap<Item_Type>::get_right_index(index);
-            swap_index = -1;
-            swap_left = -1;
-            swap_right = -1;
-            if(left < MinHeap<Item_Type>::length() && MinHeap<Item_Type>::heap[index].id > MinHeap<Item_Type>::heap[left].id){swap_left = left;}
-            if(right < MinHeap<Item_Type>::length() && MinHeap<Item_Type>::heap[index].id > MinHeap<Item_Type>::heap[right].id){swap_right = right;}
-            if(swap_left < 0 && swap_right < 0){
-                done = true;
-                continue;
-                }
-            
-            if(swap_left > 0 && swap_right > 0){
-                if(MinHeap<Item_Type>::heap[left].id < MinHeap<Item_Type>::heap[right].id){swap_index = left;}
-                else{swap_index = right;}
-            }else{swap_index = swap_left >swap_right ? swap_left : swap_right;}
-            
-            Item<Item_Type> temp = MinHeap<Item_Type>::heap[index];
-            MinHeap::heap[index] = MinHeap<Item_Type>::heap[swap_index];
-            MinHeap::heap[swap_index] = temp;
-            index = swap_index;
-        }
-    }
-
-template <class Item_Type>
-void MinHeap<Item_Type>::insert(int value, Item_Type id){
-        MinHeap<Item_Type>::heap.push_back(Item<Item_Type>(id, value));
-        int index = MinHeap::length() - 1;
-        int parent = MinHeap<Item_Type>::get_parent_index(index);
-        Item<Item_Type> temp;
-        while(MinHeap<Item_Type>::heap[parent].id > MinHeap<Item_Type>::heap[index].id && parent >= 0){
-            temp = MinHeap<Item_Type>::heap[index];
-            MinHeap<Item_Type>::heap[index] = MinHeap<Item_Type>::heap[parent];
-            index = parent;
-            parent = MinHeap<Item_Type>::get_parent_index(index);
-        }
-    }
-    
-    
-template <class Item_Type>
-void MinHeap<Item_Type>::build_heap(int array[], int size){
-    for(int i = 0; i < size; i++){
-        MinHeap<Item_Type>::heap.push_back(Item<Item_Type>(i, array[i]));
-        }
-    int last_index = MinHeap<Item_Type>::length() - 1;
-    for(int i = MinHeap<Item_Type>::get_parent_index(last_index); i >= 0; i--){
-        MinHeap<Item_Type>::swift_down(i);
-        }
-    }
-
-
-//Max Heap
-//==================================================================================
-template <class Item_Type>
-MaxHeap<Item_Type>::MaxHeap() : Heap<Item_Type>(){}
-
-template <class Item_Type>
-Item_Type MaxHeap<Item_Type>::get_max(){
-    return MaxHeap<Item_Type>::get_front();
-    }
-
-template <class Item_Type>
-Item_Type MaxHeap<Item_Type>::extract_max(){
-    if(MaxHeap<Item_Type>::length() == 0){
-        throw empty_heap_exc;
-        }
-        
-    int value = MaxHeap<Item_Type>::heap[0].value;
-    if(MaxHeap<Item_Type>::length() > 1){
-        Item<Item_Type> last_element = MaxHeap<Item_Type>::heap[MaxHeap<Item_Type>::length() - 1];
-        MaxHeap<Item_Type>::heap[0] = last_element;
-        MaxHeap<Item_Type>::heap.pop_back();
-        MaxHeap<Item_Type>::swift_down(0);
-        }else{
-            MaxHeap<Item_Type>::heap.clear();
-            }
-    return value;
-    }
-
-template <class Item_Type>
-void MaxHeap<Item_Type>::swift_down(int index){
-        int left, right, swap_index, swap_left, swap_right;
-         
-        bool done = false;
-        while(!done){
-            left = MaxHeap<Item_Type>::get_left_index(index);
-            right = MaxHeap<Item_Type>::get_right_index(index);
-            swap_index = -1;
-            swap_left = -1;
-            swap_right = -1;
-            if(left < MaxHeap<Item_Type>::length() && MaxHeap<Item_Type>::heap[index].id < MaxHeap<Item_Type>::heap[left].id){swap_left = left;}
-            if(right < MaxHeap<Item_Type>::length() && MaxHeap<Item_Type>::heap[index].id < MaxHeap<Item_Type>::heap[right].id){swap_right = right;}
-            if(swap_left < 0 && swap_right < 0){
-                done = true;
-                continue;
-                }
-            
-            if(swap_left > 0 && swap_right > 0){
-                if(MaxHeap<Item_Type>::heap[left].id > MaxHeap<Item_Type>::heap[right].id){swap_index = left;}
-                else{swap_index = right;}
-            }else{swap_index = swap_left >swap_right ? swap_left : swap_right;}
-            
-            Item<Item_Type> temp = MaxHeap<Item_Type>::heap[index];
-            MaxHeap<Item_Type>::heap[index] = MaxHeap<Item_Type>::heap[swap_index];
-            MaxHeap<Item_Type>::heap[swap_index] = temp;
-            index = swap_index;
-        }
-    }
-
-template <class Item_Type>
-void MaxHeap<Item_Type>::insert(int value,Item_Type  id){
-        MaxHeap<Item_Type>::heap.push_back(Item<Item_Type>(id, value));
-        int index = MaxHeap<Item_Type>::length() - 1;
-        int parent = MaxHeap<Item_Type>::get_parent_index(index);
-        Item<Item_Type> temp;
-        while(MaxHeap<Item_Type>::heap[parent].id < MaxHeap<Item_Type>::heap[index].id && parent >= 0){
-            temp = MaxHeap<Item_Type>::heap[index];
-            MaxHeap<Item_Type>::heap[index] = MaxHeap<Item_Type>::heap[parent];
-            index = parent;
-            parent = MaxHeap<Item_Type>::get_parent_index(index);
-        }
-    }
-    
-template <class Item_Type>
-void MaxHeap<Item_Type>::build_heap(int array[], int size){
-    for(int i = 0; i < size; i++){
-        MaxHeap<Item_Type>::heap.push_back(Item<Item_Type>(i, array[i]));
-        }
-    int last_index = MaxHeap<Item_Type>::length() - 1;
-    for(int i = MaxHeap<Item_Type>::get_parent_index(last_index); i >= 0; i--){
-        MaxHeap<Item_Type>::swift_down(i);
-        }
-    }
-
-
-//String Item
-//==================================================================================
-StringItem::StringItem(string key,  int value){
-    StringItem::key = key;
-    StringItem::value = value;
-    StringItem::empty = false;
-    }
-    
-StringItem::StringItem(){
-    StringItem::empty = true;
-    }
-    
-string StringItem::get_key(){return StringItem::key;}
-int StringItem::get_value(){return StringItem::value;}
-
-string StringItem::toString(){
-    stringstream os;
-    if(!StringItem::empty){
-        os << StringItem::key << " : " << StringItem::value;
-    }else{
-        os << "[Empty Item]";
-    }
-    return os.str();
-    }
-
-//HashTable
-//==================================================================================
-HashTable::HashTable(int size){
-    HashTable::size = size;
-    HashTable::item_num = 0;
-    for(int i = 0; i < size; i++){
-        HashTable::array.push_back(StringItem());
-        }
-    for(int i = 0; i < size; i++){
-        HashTable::deleted.push_back(false);
-        }
-    }
-
-    
-HashTable::HashTable(){
-    HashTable::size = 10;
-    HashTable::item_num = 0;
-    for(int i = 0; i < size; i++){
-        HashTable::array.push_back(StringItem());
-        }
-    for(int i = 0; i < size; i++){
-        HashTable::deleted.push_back(false);
-        }
-    }
-
-int HashTable::hash_function(const string str){
-    unsigned char hash[SHA256_DIGEST_LENGTH];
-    SHA256_CTX sha256;
-    SHA256_Init(&sha256);
-    SHA256_Update(&sha256, str.c_str(), str.size());
-    SHA256_Final(hash, &sha256);
-    stringstream ss;
-    for(int i = 0; i < SHA256_DIGEST_LENGTH; i++)
-    {
-        ss << hex << setw(2) << setfill('0') << (int)hash[i];
-    }
-    string result = ss.str();
-    mpz_class hash_num = 0;
-    for(int i = 0; i < result.length(); i++){
-        int ascii_value = int(result[i]);
-        ss.str("");
-        ss << ascii_value;
-        hash_num = hash_num*int(pow(10, ss.str().length())) + ascii_value;
-        }
-    return hash_num.get_ui()% HashTable::size;
-    }
-
-int HashTable::get_index(string key){
-    int index = HashTable::hash_function(key);
-    for(int i = 0; i < HashTable::size; i ++){
-        StringItem item = HashTable::array[index];
-        if(item.empty && !HashTable::deleted[index]){return NULL;}
-        else{if(!item.empty && item.key == key){return index;}
-            else{index = (index + 1) % HashTable::size;}
-            }
-        }
-    }
-    
-void HashTable::set(string key, int value){
-    int index = HashTable::hash_function(key);
-    int i = 0;
-    bool done = false;    
-    while(!done && i < HashTable::size){
-        //Empty undeleted slot
-        if(HashTable::array[index].empty && !HashTable::deleted[index]){
-            HashTable::array[index] = StringItem(key, value);
-            HashTable::item_num ++;
-            done = true;
-            continue;
-        }
-        //Empty deleted slot
-        else{
-        if(HashTable::array[index].empty && HashTable::deleted[index]){
-            int existing_index = HashTable::get_index(key);
-            if(existing_index == NULL){
-                HashTable::array[index] = StringItem(key, value);
-                HashTable::item_num ++;
-            }
-            else{
-                HashTable::array[existing_index].value = value;
-            }
-            done = true;
-            continue;
-        }
-        //Full slot desired key
-        else{
-        if(HashTable::array[index].key == key){
-            HashTable::array[index].value = value;
-            done = true;
-            continue;
-        }
-        //Different key
-        else{
-            index = (index + 1) % HashTable::size;
-        }
-        }
-        }
-    i ++;
-    }
-                    
-    if(HashTable::item_num > 0.9*HashTable::size){
-        HashTable::resize();
-    }
-    }
-    
-void HashTable::resize(){
-    vector<StringItem> old= HashTable::array;
-    HashTable::size *= 2;
-    HashTable::array.clear();
-    for(int i = 0; i < HashTable::size; i++){
-        if(i < int(HashTable::size/2)){
-        HashTable::deleted[i] = false;
-        HashTable::deleted.push_back(false);
-        }
-        HashTable::array.push_back(StringItem());
-    }
-    
-    HashTable::item_num = 0;
-    for(int i = 0; i < old.size(); i++){
-        if(!old[i].empty){            
-            HashTable::set(old[i].key, old[i].value);
-            }
-        }
-    }
-
-
-
-    
-    
-
-int HashTable::get(string key){
-    int index = HashTable::get_index(key);
-    if(index != NULL){
-        return HashTable::array[index].value;
-        }
-    else{
-        throw wrong_key_exc;
-        }
-    }
-
-void HashTable::del(string key){
-    int index = HashTable::get_index(key);
-    if(index != NULL){
-        delete &HashTable::array[index] ;
-        HashTable::array[index].empty = true;
-        HashTable::deleted[index] = true;
-        HashTable::item_num--;
-        }
-    else{
-        throw wrong_key_exc;
-        }
-    }
-
-bool HashTable::in(string key){return HashTable::get_index(key) != NULL;}
-
-HashTable::~HashTable(){
-    HashTable::array.clear();
-    HashTable::deleted.clear();
-    HashTable::size = NULL;
-    HashTable::item_num = NULL;
-    }
-
-string HashTable::toString(){
-    stringstream os;
-    os << '{';
-    int added_items = 0;
-    for(int i = 0; i < HashTable::size; i++){
-        if(!HashTable::array[i].empty){
-            added_items++;
-            os << array[i].toString();
-            if(added_items != HashTable::item_num){os << ", ";}
-            }
-        }
-    os << '}';
-    return os.str();
-    }
-    
-int HashTable::get_item_num(){return HashTable::item_num;}
-
-
+class HashTable{
+    protected:
+        int item_num;
+        vector<StringItem> array;
+        vector<bool> deleted;
+        int size;
+        int hash_function(string);
+        int get_index(string);
+        void resize();
+    public:
+        HashTable(int);
+        HashTable();
+        ~HashTable();
+        void set(string, int);
+        int get(string);
+        void del(string);
+        bool in(string);
+        string toString();
+        int get_item_num();
+    };
